@@ -197,34 +197,36 @@ $total_akhir = $subtotal_keseluruhan + $ongkir;
                 </div>
             <?php endforeach; ?>
 
-            <!-- ✅ Ringkasan Pembayaran -->
-            <div class="payment-summary">
-                <h3>Ringkasan Pembayaran</h3>
-                
-                <div class="summary-item">
-                    <span class="summary-label">Subtotal Produk :</span>
-                    <span class="summary-value">Rp<?= number_format($subtotal_keseluruhan, 0, ',', '.') ?></span>
-                </div>
-                
-                <div class="summary-item">
-                    <span class="summary-label">Total Barang :</span>
-                    <span class="summary-value"><?= $total_barang ?> item</span>
-                </div>
-                
-                <div class="summary-item">
-                    <span class="summary-label">Ongkos Kirim <?= $pulau_terpilih ? ' ('.ucwords($pulau_terpilih).')' : '' ?>:</span>
-                    <span class="summary-value">
-                        <?php if ($ongkir > 0): ?>
-                            IDR <?= number_format($ongkir, 0, ',', '.') ?>
-                        <?php else: ?>
-                            <em>Pilih alamat untuk melihat ongkir</em>
-                        <?php endif; ?>
-                    </span>
-                </div>
-                
-                <div class="summary-item total-final">
-                    <span class="summary-label">TOTAL PEMBAYARAN :</span>
-                    <span class="summary-value">Rp<?= number_format($total_akhir, 0, ',', '.') ?></span>
+            <div class="payment">
+                <!-- ✅ Ringkasan Pembayaran -->
+                <div class="payment-summary">
+                    <h3>Ringkasan Pembayaran</h3>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Subtotal Produk :</span>
+                        <span class="summary-value">Rp<?= number_format($subtotal_keseluruhan, 0, ',', '.') ?></span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Total Barang :</span>
+                        <span class="summary-value"><?= $total_barang ?> item</span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Ongkos Kirim <?= $pulau_terpilih ? ' ('.ucwords($pulau_terpilih).')' : '' ?>:</span>
+                        <span class="summary-value">
+                            <?php if ($ongkir > 0): ?>
+                                IDR <?= number_format($ongkir, 0, ',', '.') ?>
+                            <?php else: ?>
+                                <em>Pilih alamat untuk melihat ongkir</em>
+                            <?php endif; ?>
+                        </span>
+                    </div>
+                    
+                    <div class="summary-item total-final">
+                        <span class="summary-label">Total Pembayaran :</span>
+                        <span class="summary-value">Rp<?= number_format($total_akhir, 0, ',', '.') ?></span>
+                    </div>
                 </div>
             </div>
 

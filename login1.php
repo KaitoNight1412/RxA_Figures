@@ -37,9 +37,9 @@ include "koneksi.php";
 
                 <button type="submit">Login</button>
 
-                <div class="forgot">
+                <!-- <div class="forgot">
                     <a href="#">Forgot your email or password?</a>
-                </div>
+                </div> -->
             </form>
 
             <hr>

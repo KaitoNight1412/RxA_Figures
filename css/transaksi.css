@@ -119,6 +119,17 @@ nav a {
     font-size: 18px;
 }
 
+.payment {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
 /* ✅ Style untuk total keseluruhan */
 .total-section {
     background-color: #e8f5e8;
@@ -153,6 +164,7 @@ nav a {
 }
 
 .btn-pilih-alamat:hover {
+    color: black;
     background-color: rgb(228, 175, 0);
 }
 
