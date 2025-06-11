@@ -25,7 +25,7 @@ elseif (mysqli_num_rows($query_users)) {
     $_SESSION['id_user'] = $user['id_user']; 
     $_SESSION['username'] = $user['username']; 
     $_SESSION['role'] = 'user';
-    header("Location: index.php?status=user");
+    header("Location: user.php?status=user");
     exit;
 }
 

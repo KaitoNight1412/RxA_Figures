@@ -21,7 +21,7 @@ if (!empty($checkout_items)) {
     $ids = implode(',', array_map('intval', $checkout_items));
     
     // ✅ Query yang diperbaiki dengan JOIN ke keranjang untuk mendapatkan jumlah
-    $query = "SELECT p.nama_produk, k.jumlah_item, p.harga, k.subtotal
+    $query = "SELECT p.nama_produk, p.gambar, k.jumlah_item, p.harga, k.subtotal
               FROM produk p 
               JOIN keranjang k ON p.id_produk = k.id_produk 
               WHERE p.id_produk IN ($ids) AND k.id_user = '{$_SESSION['id_user']}'";
@@ -66,6 +66,7 @@ if (!empty($checkout_items)) {
                 <div style="margin-top: 15px;">
                 <?php foreach ($produk_dibeli as $produk): ?>
                     <div class="product-item">
+                        <img src="gambar_produk/<?= htmlspecialchars($produk['gambar']) ?>" alt="<?= htmlspecialchars($produk['nama_produk']) ?>" style="max-width: 120px;">
                         <div class="product-name">
                             <?= htmlspecialchars($produk['nama_produk']) ?>
                         </div>
@@ -103,7 +104,7 @@ if (!empty($checkout_items)) {
                 <span><?=$total_barang?></span>
             </div>
             <div class="summary-row total">
-                <span>💳 TOTAL PEMBAYARAN</span>
+                <span>💳 Total Pembayaran</span>
                 <span>Rp<?= number_format($total_akhir, 0, ',', '.') ?></span>
             </div>
         </div>

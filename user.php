@@ -21,7 +21,7 @@ if (!isset($_SESSION['id_user'])) {
 </head>
 <body>
     <header>
-        <img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" >
+        <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" ></a>
         <nav>
             <div class="profile-icon">    
                 <a href="DaftarProduk.php">Products</a>
@@ -37,7 +37,7 @@ if (!isset($_SESSION['id_user'])) {
             <a href="DaftarProduk.php">Product Store <span>▶</span></a>
             <a href="keranjang.php">Cart <span>▶</span></a>
             <!-- <a href="profile.php">User Info <span>▶</span></a> -->
-            <a href="transaksi.php">Payment <span>▶</span></a>
+            <a href="log_transaksi.php">Payment <span>▶</span></a>
             <a href="Logout.php">Logout <span>▶</span></a>
         </div>
     </main>

@@ -27,7 +27,7 @@ while ($produk = mysqli_fetch_assoc($query)) {
 </head>
 <body>
     <header>
-        <img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" >
+        <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" ></a>
         <nav>
             <div class="profile-icon">    
                 <a href="DaftarProduk.php">Products</a>

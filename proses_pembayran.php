@@ -115,7 +115,7 @@ if ($result_produk && mysqli_num_rows($result_produk) > 0) {
     
     // ✅ Bersihkan session dan redirect
     unset($_SESSION['checkout']);
-    echo "<script>alert('Pembayaran berhasil, pesanan diproses'); window.location='index.php';</script>";
+    echo "<script>alert('Pembayaran berhasil, pesanan diproses'); window.location='user.php';</script>";
     
 } else {
     echo "<script>alert('Error: Tidak ada produk yang ditemukan'); window.location='keranjang.php';</script>";

@@ -46,6 +46,10 @@ nav a {
     background-color: transparent;
 }
 
+main {
+    margin-top: 10px;
+}
+
 .container {
     max-width: 800px;
     margin: 0 auto;

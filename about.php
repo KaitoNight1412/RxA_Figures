@@ -36,6 +36,24 @@ include "koneksi.php";
             <p>Dah itu aja.... Selamat berbelanja kawan...</p>
         </div>
         <h3>Awas khilaf !!</h3>
+
+
+        <!-- <h3 class="adm">Berikut adalah sosok admin</h3>
+        <div class="container">
+            <div class="admin_person">
+                <img src="pic_admin/JustRoff.jpg" alt="Admin 1">    
+                <p>Rofi Dwi Saputra</p>
+                <p>a.k.a</p>
+                <p>JustRoff</p>
+            </div>
+
+            <div class="admin_person">
+                <img src="pic_admin/KaitoNight.jpg" alt="Admin 2">
+                <p>Muhammad Alif Nurul Insan</p>
+                <p>a.k.a</p>
+                <p>KaitoNight</p>
+            </div>
+        </div> -->
     </main>
 
     <footer>

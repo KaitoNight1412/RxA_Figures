@@ -90,7 +90,6 @@ $jumlah_keranjang = mysqli_num_rows($query);
             <button type="submit" style="margin-top: 20px;">Checkout Produk Terpilih</button>
         <?php } else { ?>
             <p>Kamu belum belanja apapun</p>
-            <a href="DaftarProduk.php">Khilaf yuk</a>
         <?php } ?>
         </form>
             <a href="DaftarProduk.php">nambah yuk</a>

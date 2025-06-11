@@ -15,7 +15,7 @@ include "koneksi.php";
 </head>
 <body>
     <header>
-        <img src="img/logo/logo.png" alt="R&A Figure Logo" class="logo">
+        <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Figure Logo" class="logo"></a>
         <nav>
             <div class="profile-icon">
                 <a href="about.php">About us</a>

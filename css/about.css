@@ -61,6 +61,43 @@ main h1 {
     font-size: 20px;
 }
 
+/* h3 {
+    margin-bottom: 5%;
+} */
+
+.adm {
+    margin-top: 20%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.container   {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    padding: 20px;
+    box-sizing: border-box; 
+}
+
+.admin-person {
+    text-align: center;
+    max-width: 200px;
+}
+
+.admin-person img {
+    width: 200px;
+    height: 300px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.admin-person p {
+    margin-top: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
 footer {
     margin-top: 80px;
     border-top: 3px solid orange;

@@ -99,7 +99,6 @@ while ($row = mysqli_fetch_assoc($manufacturer_query)) {
 <body>
     <header>
         <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo"></a>
-        
         <nav>
             <div class="profile-icon">    
                 <a href="DaftarProduk.php">Products</a>
@@ -199,7 +198,7 @@ while ($row = mysqli_fetch_assoc($manufacturer_query)) {
             </a>
         <?php } ?>
             <?php } else { ?>
-                <img src="img_properties\HD-wallpaper-peek-a-boo-inside-girls-anime-door.jpg" alt="Tobangado">
+                <img src="img_properties/pic.jpg" alt="Tobangado" class="error">
                 <p style="text-align: center; font-size: 18px; color: red;">Maaf, sepertinya barang yang kamu cari tidak ada.</p>
             <?php } ?>
         </div>

@@ -21,7 +21,7 @@ if (!isset($_SESSION['id_admin'])) {
 </head>
 <body>
     <header>
-        <img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" >
+        <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" ></a>
         <nav>
             <div class="profile-icon">    
                 <a href="dashboard.php">Add Product</a>
