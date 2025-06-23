@@ -56,7 +56,7 @@ include "koneksi.php";
             <?php if ($_GET['status'] === 'admin'): ?>
                 Swal.fire({
                 title: 'Login Admin Berhasil!',
-                text: 'Selamat datang, Komandan Admin!',
+                text: 'Selamat datang, Admin!',
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false
