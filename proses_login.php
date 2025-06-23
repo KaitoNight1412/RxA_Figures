@@ -16,7 +16,7 @@ if (mysqli_num_rows($query_admin)) {
     $_SESSION['id_admin'] = $admin['id_admin'];
     $_SESSION['adminname'] = $admin['username'];
     $_SESSION['role'] = 'admin';
-    header("Location: admin.php?status=admin");
+    header("Location: login1.php?status=admin");
     exit;
 }
 
@@ -25,12 +25,12 @@ elseif (mysqli_num_rows($query_users)) {
     $_SESSION['id_user'] = $user['id_user']; 
     $_SESSION['username'] = $user['username']; 
     $_SESSION['role'] = 'user';
-    header("Location: user.php?status=user");
+    header("Location: login1.php?status=user");
     exit;
 }
 
 else {
-    header("Location: login1.php?Login=G");
+    header("Location: login1.php?Login=gagal");
     exit;
 }
 ?>

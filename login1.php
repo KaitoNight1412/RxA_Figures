@@ -49,6 +49,40 @@ include "koneksi.php";
                 <a href="register.php"><button>Registration</button></a>
             </div>
         </div>
+        
+        <?php if (isset($_GET['status'])): ?>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            <?php if ($_GET['status'] === 'admin'): ?>
+                Swal.fire({
+                title: 'Login Admin Berhasil!',
+                text: 'Selamat datang, Komandan Admin!',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+                }).then(() => {
+                window.location.href = 'admin.php';
+                });
+            <?php elseif ($_GET['status'] === 'user'): ?>
+                Swal.fire({
+                title: 'Login User Berhasil!',
+                text: 'Selamat datang kembali!',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+                }).then(() => {
+                window.location.href = 'user.php';
+                });
+            <?php elseif ($_GET['status'] === 'gagal'): ?>
+                Swal.fire({
+                title: 'Login Gagal!',
+                text: 'Username atau password salah.',
+                icon: 'error',
+                confirmButtonText: 'Coba Lagi'
+                });
+            <?php endif; ?>
+        </script>
+            <?php endif; ?>
     </main>
 
     <footer>
@@ -65,7 +99,6 @@ include "koneksi.php";
             <a href="DaftarProduk.php">R&A Figure Store</a>
         </div>
     </footer>
-
-    <script src="sweetalert2.all.min.js"></script>
+    
 </body>
 </html>
