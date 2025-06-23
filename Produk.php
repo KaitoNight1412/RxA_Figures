@@ -56,7 +56,7 @@ while ($produk = mysqli_fetch_assoc($query)) {
                 <div class="buttons">
                     <form action="proses_keranjang.php" method="post">
                         <label for="">Qty</label>
-                        <input type="number" name="jumlah_item" min="1" max="<?=$produk['stok']?>" id="" placeholder="0">
+                        <input type="number" name="jumlah_item" min="1" max="<?=$produk['stok']?>" id="" value="1">
                         <input type="hidden" name="id_produk" value="<?=$produk['id_produk']?>">
                         <input type="hidden" name="id_user" value="<?= $_SESSION['id_user'] ?>">
                         <button type="submit"class="btn-orange">Add to Cart</button>
@@ -96,6 +96,33 @@ while ($produk = mysqli_fetch_assoc($query)) {
             <a href="homepage.php">R&A Figure Store</a>
         </div>
     </footer>
+    
+    <?php if (isset($_GET['sukses']) && $_GET['sukses'] === 'added_to_cart'): ?>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            Swal.fire({
+            title: 'Berhasil!',
+            text: 'Produk telah ditambahkan ke keranjang.',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+            });
+        </script>
+
+    <?php elseif (isset($_GET['error'])): ?>
+        <script>
+            Swal.fire({
+            title: 'Gagal!',
+            text: '<?php
+                if ($_GET["error"] === "insert_failed") echo "Gagal menambahkan ke keranjang.";
+                elseif ($_GET["error"] === "product_not_found") echo "Produk tidak ditemukan.";
+                else echo "Terjadi kesalahan."; ?>',
+            icon: 'error',
+            confirmButtonText: 'OK'
+            });
+        </script>
+    <?php endif; ?>
+    
 </body>
 </html>
 

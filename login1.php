@@ -49,9 +49,25 @@ include "koneksi.php";
                 <a href="register.php"><button>Registration</button></a>
             </div>
         </div>
-        
-        <?php if (isset($_GET['status'])): ?>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </main>
+
+    <footer>
+        <div class="footer-left">
+            <p>Official Social Media Account</p>
+            <div class="social-icons">
+                <a href="https://x.com/" class="x-icon"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="https://www.youtube.com/" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
+                <a href="https://www.instagram.com/" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="footer-right">
+            <a href="about.php">About Us</a>
+            <a href="DaftarProduk.php">R&A Figure Store</a>
+        </div>
+    </footer>
+
+    <?php if (isset($_GET['status'])): ?>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             <?php if ($_GET['status'] === 'admin'): ?>
                 Swal.fire({
@@ -83,22 +99,5 @@ include "koneksi.php";
             <?php endif; ?>
         </script>
             <?php endif; ?>
-    </main>
-
-    <footer>
-        <div class="footer-left">
-            <p>Official Social Media Account</p>
-            <div class="social-icons">
-                <a href="https://x.com/" class="x-icon"><i class="fa-brands fa-x-twitter"></i></a>
-                <a href="https://www.youtube.com/" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
-                <a href="https://www.instagram.com/" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
-            </div>
-        </div>
-        <div class="footer-right">
-            <a href="about.php">About Us</a>
-            <a href="DaftarProduk.php">R&A Figure Store</a>
-        </div>
-    </footer>
-    
 </body>
 </html>

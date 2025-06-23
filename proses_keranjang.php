@@ -24,10 +24,13 @@ if(mysqli_num_rows($query_produk)==1) {
 
     if ($query_keranjang) {
         header("Location: produk.php?id_produk=$id_produk&sukses=added_to_cart");
+        exit;
     } else {
         header("Location: produk.php?id_produk=$id_produk&error=insert_failed");
+        exit;
     }
 } else {
     header("Location: produk.php?id_produk=$id_produk&error=product_not_found");
+    exit;
 }
 ?>
