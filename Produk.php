@@ -22,6 +22,7 @@ while ($produk = mysqli_fetch_assoc($query)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produk Terpilih</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="css/ProdukIn.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -40,7 +41,13 @@ while ($produk = mysqli_fetch_assoc($query)) {
     <main>
         <div class="produk-container">
             <div class="produk-img">
-                <img src="gambar_produk/<?= $produk['gambar'] ?>" alt="<?= $produk['nama_produk'] ?>" srcset="">
+                <img id="gambar-kecil" src="gambar_produk/<?= $produk['gambar'] ?>" alt="<?= $produk['nama_produk'] ?>">
+
+                <!-- Modal Gambar -->
+                <div id="modalGambar" class="modal-gambar">
+                    <span class="close-modal" onclick="tutupModal()">&times;</span>
+                    <img class="modal-content" id="gambarDiperbesar">
+                </div>
             </div>
 
             <div class="produk-info">
@@ -56,9 +63,9 @@ while ($produk = mysqli_fetch_assoc($query)) {
                 <div class="buttons">
                     <form action="proses_keranjang.php" method="post">
                         <label for="">Qty</label>
-                        <input type="number" name="jumlah_item" min="1" max="<?=$produk['stok']?>" id="" value="1">
+                        <input type="number" name="jumlah_item" min="1" max="<?=$produk['stok']?>" id="qty-input" >
                         <input type="hidden" name="id_produk" value="<?=$produk['id_produk']?>">
-                        <input type="hidden" name="id_user" value="<?= $_SESSION['id_user'] ?>">
+                        <input type="hidden" name="id_user" value="<?= isset($_SESSION['id_user']) ? $_SESSION['id_user'] : $_SESSION['id_admin'] ?>">
                         <button type="submit"class="btn-orange">Add to Cart</button>
                     </form>
                 </div>
@@ -96,9 +103,16 @@ while ($produk = mysqli_fetch_assoc($query)) {
             <a href="homepage.php">R&A Figure Store</a>
         </div>
     </footer>
-    
+
+    <script>
+        if ($$produk['stok'] > 0) {
+            document.getElementById('qty-input').value = 1;
+        } else {
+                    document.getElementById('qty-input').value = 0;
+        }
+    </script>
+
     <?php if (isset($_GET['sukses']) && $_GET['sukses'] === 'added_to_cart'): ?>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             Swal.fire({
             title: 'Berhasil!',
@@ -109,20 +123,42 @@ while ($produk = mysqli_fetch_assoc($query)) {
             });
         </script>
 
-    <?php elseif (isset($_GET['error'])): ?>
-        <script>
-            Swal.fire({
-            title: 'Gagal!',
-            text: '<?php
-                if ($_GET["error"] === "insert_failed") echo "Gagal menambahkan ke keranjang.";
-                elseif ($_GET["error"] === "product_not_found") echo "Produk tidak ditemukan.";
-                else echo "Terjadi kesalahan."; ?>',
-            icon: 'error',
-            confirmButtonText: 'OK'
-            });
-        </script>
+        <?php elseif (isset($_GET['error'])): ?>
+            <script>
+                Swal.fire({
+                title: 'Gagal!',
+                text: '<?php
+                    if ($_GET["error"] === "insert_failed") echo "Gagal menambahkan ke keranjang.";
+                    elseif ($_GET["error"] === "product_not_found") echo "Produk tidak ditemukan.";
+                    else echo "Terjadi kesalahan."; ?>',
+                icon: 'error',
+                confirmButtonText: 'OK'
+                });
+            </script>
     <?php endif; ?>
-    
+
+    <script>
+        const gambarKecil = document.getElementById("gambar-kecil");
+        const modal = document.getElementById("modalGambar");
+        const gambarModal = document.getElementById("gambarDiperbesar");
+
+        gambarKecil.onclick = function () {
+            modal.style.display = "block";
+            gambarModal.src = this.src;
+        }
+
+        function tutupModal() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+
 </body>
 </html>
 

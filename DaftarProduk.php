@@ -54,16 +54,16 @@ if (!empty($end_month)) {
 
 switch ($sort) {
     case 'oldest':
-        $sql_produk .= " ORDER BY tanggal_terbit ASC";
+        $sql_produk .= " ORDER BY (CASE WHEN stok > 0 THEN 0 ELSE 1 END), tanggal_terbit ASC";
         break;
     case 'highest_price':
-        $sql_produk .= " ORDER BY harga DESC";
+        $sql_produk .= " ORDER BY (CASE WHEN stok > 0 THEN 0 ELSE 1 END), harga DESC";
         break;
     case 'lowest_price':
-        $sql_produk .= " ORDER BY harga ASC";
+        $sql_produk .= " ORDER BY (CASE WHEN stok > 0 THEN 0 ELSE 1 END), harga ASC";
         break;
     default:
-        $sql_produk .= " ORDER BY tanggal_terbit DESC"; // default = latest
+        $sql_produk .= " ORDER BY (CASE WHEN stok > 0 THEN 0 ELSE 1 END), tanggal_terbit DESC"; // default = latest
         break;
 }
 $query = mysqli_query($koneksi, $sql_produk);
@@ -100,12 +100,21 @@ while ($row = mysqli_fetch_assoc($manufacturer_query)) {
     <header>
         <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo"></a>
         <nav>
-            <div class="profile-icon">    
-                <a href="DaftarProduk.php">Products</a>
-                <a href="keranjang.php">Cart</a>
-                <a href="cek_profil.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
+            <div class="profile-icon">
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <a href="dashboard.php">Add Product</a>
+                    <a href="DaftarProduk.php">Products</a>
+                    <a href="admin.php"><img src="img/user/user.png" alt="Admin Icon" class="profile"></a>
+                <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'user'): ?>
+                    <a href="DaftarProduk.php">Products</a>
+                    <a href="keranjang.php">Cart</a>
+                    <a href="user.php"><img src="img/user/user.png" alt="User Icon" class="profile"></a>
+                <?php else: ?>
+                    <a href="login1.php">Login</a>
+                <?php endif; ?>
             </div>
         </nav>
+
     </header>
 
     <main>

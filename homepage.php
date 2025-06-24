@@ -31,8 +31,8 @@ $result_produk = mysqli_query($koneksi, $query_produk);
 
     <main>
         <div class="carousel-container">
-                <button class="carousel-button prev">❮</button>
-                <button class="carousel-button next">❯</button>
+                <!-- <button class="carousel-button prev">❮</button>
+                <button class="carousel-button next">❯</button> -->
                 <div class="carousel" id="carousel">
                     <img src="img/sample product/carousel/crsl1.webp" alt="Banner 1">
                     <img src="img/sample product/carousel/crsl2.webp" alt="Banner 2">
