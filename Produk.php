@@ -108,7 +108,7 @@ while ($produk = mysqli_fetch_assoc($query)) {
         if ($$produk['stok'] > 0) {
             document.getElementById('qty-input').value = 1;
         } else {
-                    document.getElementById('qty-input').value = 0  ;
+                    document.getElementById('qty-input').value = 0;
         }
     </script>
 
