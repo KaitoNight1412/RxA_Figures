@@ -1,6 +1,5 @@
 let map;
 let currentMarker;
-let searchTimeout;
 let selectedCoordinates = null;
 
 // Batasan koordinat Indonesia
@@ -123,11 +122,6 @@ function setLocation(lat, lng, source) {
     
     // Enable Google Maps button
     enableGoogleMapsButton();
-    
-    // Update search input if from search
-    if (source !== 'search') {
-        document.getElementById('locationSearch').value = `${source} (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-    }
 }
 
 // Fungsi untuk mengaktifkan tombol Google Maps
@@ -158,149 +152,6 @@ function openGoogleMaps() {
     
     // Open in new tab
     window.open(googleMapsUrl, '_blank');
-}
-
-function getDirections() {
-    if (!selectedCoordinates) {
-        alert('⚠️ Silakan pilih lokasi terlebih dahulu!');
-        return;
-    }
-    
-    const { lat, lng } = selectedCoordinates;
-    const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-    
-    // Open in new tab
-    window.open(directionsUrl, '_blank');
-}
-
-function shareLocation() {
-    if (!selectedCoordinates) {
-        alert('⚠️ Silakan pilih lokasi terlebih dahulu!');
-        return;
-    }
-    
-    const { lat, lng, island } = selectedCoordinates;
-    const shareText = `Lokasi di Pulau ${island}, Indonesia: ${lat.toFixed(6)}, ${lng.toFixed(6)}\nGoogle Maps: https://www.google.com/maps?q=${lat},${lng}`;
-    
-    // Try to use Web Share API if available
-    if (navigator.share) {
-        navigator.share({
-            title: 'Bagikan Lokasi Indonesia',
-            text: shareText,
-            url: `https://www.google.com/maps?q=${lat},${lng}`
-        }).catch(err => {
-            console.log('Error sharing:', err);
-            fallbackShare(shareText);
-        });
-    } else {
-        fallbackShare(shareText);
-    }
-}
-
-function fallbackShare(text) {
-    // Copy to clipboard
-    navigator.clipboard.writeText(text).then(() => {
-        alert('📋 Lokasi berhasil disalin ke clipboard!\n\n' + text);
-    }).catch(err => {
-        // Fallback if clipboard API not available
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('📋 Lokasi berhasil disalin ke clipboard!\n\n' + text);
-    });
-}
-
-// Search functionality - hanya Indonesia
-document.getElementById('locationSearch').addEventListener('input', function() {
-    const query = this.value.trim();
-    
-    if (query.length < 3) {
-        hideSearchResults();
-        return;
-    }
-    
-    // Debounce search
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        searchLocation(query);
-    }, 500);
-});
-
-// Hide search results when clicking outside
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.search-container')) {
-        hideSearchResults();
-    }
-});
-
-function searchLocation(query) {
-    const searchResults = document.getElementById('searchResults');
-    searchResults.innerHTML = '<div class="search-result-item">🔍 Mencari di Indonesia...</div>';
-    searchResults.style.display = 'block';
-    
-    // Using Nominatim API dengan batasan yang ketat untuk Indonesia
-    const bounds = `${INDONESIA_BOUNDS.south},${INDONESIA_BOUNDS.west},${INDONESIA_BOUNDS.north},${INDONESIA_BOUNDS.east}`;
-    
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' Indonesia')}&limit=8&countrycodes=id&addressdetails=1&viewbox=${bounds}&bounded=1`)
-        .then(response => response.json())
-        .then(data => {
-            // Filter hasil untuk memastikan dalam batas Indonesia
-            const filteredData = data.filter(result => {
-                const lat = parseFloat(result.lat);
-                const lng = parseFloat(result.lon);
-                return isInIndonesia(lat, lng);
-            });
-            displaySearchResults(filteredData);
-        })
-        .catch(error => {
-            console.error('Error searching location:', error);
-            searchResults.innerHTML = '<div class="search-result-item">❌ Error dalam pencarian. Coba lagi.</div>';
-        });
-}
-
-function displaySearchResults(results) {
-    const searchResults = document.getElementById('searchResults');
-    
-    if (results.length === 0) {
-        searchResults.innerHTML = '<div class="search-result-item">❌ Lokasi tidak ditemukan di Indonesia</div>';
-        return;
-    }
-    
-    let html = '';
-    results.forEach(result => {
-        const displayName = result.display_name;
-        const lat = parseFloat(result.lat);
-        const lng = parseFloat(result.lon);
-        const island = getIslandFromCoordinates(lat, lng);
-        
-        html += `
-            <div class="search-result-item" onclick="selectSearchResult(${lat}, ${lng}, '${displayName.replace(/'/g, "\\'")}')">
-                <strong>📍 ${result.name || 'Lokasi'}</strong><br>
-                <small>🏝️ Pulau ${island} - ${displayName}</small>
-            </div>
-        `;
-    });
-    
-    searchResults.innerHTML = html;
-}
-
-function selectSearchResult(lat, lng, name) {
-    // Pan map to location
-    map.setView([lat, lng], 16);
-    
-    // Update search input
-    document.getElementById('locationSearch').value = name.split(',')[0];
-    hideSearchResults();
-    
-    // Don't set marker yet - let user click on map for precise location
-    alert('Peta dipindahkan ke lokasi tersebut di Indonesia. Sekarang klik di map untuk menentukan lokasi yang tepat!');
-}
-
-function hideSearchResults() {
-    document.getElementById('searchResults').style.display = 'none';
 }
 
 function updateCoordinatesDisplay(lat, lng, island = '') {
@@ -376,7 +227,6 @@ function clearLocation() {
     // Clear form inputs
     document.getElementById('latitude').value = '';
     document.getElementById('longitude').value = '';
-    document.getElementById('locationSearch').value = '';
     document.getElementById('displayLat').textContent = 'Belum dipilih';
     document.getElementById('displayLng').textContent = 'Belum dipilih';
     document.getElementById('displayProvince').textContent = '-';
@@ -395,8 +245,6 @@ function clearLocation() {
     
     // Reset map view to Indonesia
     map.setView([-2.5, 118], 5);
-    
-    hideSearchResults();
 }
 
 // Form validation
