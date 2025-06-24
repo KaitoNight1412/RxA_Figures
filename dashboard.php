@@ -37,7 +37,7 @@ $query =mysqli_query($koneksi,$sql);
         <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" ></a>
         <nav>
             <div class="profile-icon">    
-                <a href="dashboard.php">Add Product</a>
+                <a href="daftar_transaksi.php">Orders</a>
                 <a href="DaftarProduk.php">Products</a>
                 <a href="admin.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>

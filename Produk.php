@@ -41,7 +41,13 @@ while ($produk = mysqli_fetch_assoc($query)) {
     <main>
         <div class="produk-container">
             <div class="produk-img">
-                <img src="gambar_produk/<?= $produk['gambar'] ?>" alt="<?= $produk['nama_produk'] ?>" srcset="">
+                <img id="gambar-kecil" src="gambar_produk/<?= $produk['gambar'] ?>" alt="<?= $produk['nama_produk'] ?>">
+
+                <!-- Modal Gambar -->
+                <div id="modalGambar" class="modal-gambar">
+                    <span class="close-modal" onclick="tutupModal()">&times;</span>
+                    <img class="modal-content" id="gambarDiperbesar">
+                </div>
             </div>
 
             <div class="produk-info">
@@ -99,7 +105,11 @@ while ($produk = mysqli_fetch_assoc($query)) {
     </footer>
 
     <script>
-        document.getElementById('qty-input').value = 1;
+        if ($$produk['stok'] > 0) {
+            document.getElementById('qty-input').value = 1;
+        } else {
+                    document.getElementById('qty-input').value = 0  ;
+        }
     </script>
 
     <?php if (isset($_GET['sukses']) && $_GET['sukses'] === 'added_to_cart'): ?>
@@ -126,6 +136,28 @@ while ($produk = mysqli_fetch_assoc($query)) {
                 });
             </script>
     <?php endif; ?>
+
+    <script>
+        const gambarKecil = document.getElementById("gambar-kecil");
+        const modal = document.getElementById("modalGambar");
+        const gambarModal = document.getElementById("gambarDiperbesar");
+
+        gambarKecil.onclick = function () {
+            modal.style.display = "block";
+            gambarModal.src = this.src;
+        }
+
+        function tutupModal() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
 
 </body>
 </html>
