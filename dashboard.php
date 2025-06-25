@@ -9,18 +9,26 @@ if (!isset($_SESSION['id_admin'])) {
 
 $sql = "SELECT produk.id_produk,
         produk.nama_produk,
-        produk.kategori,
-        produk.manufacturer,
         produk.tanggal_terbit,
         produk.harga,
         produk.stok,
         produk.rating,
         produk.gambar,
         produk.deskripsi,
+        kategori.nama_kategori AS kategori,
+        manufacturer.nama_manufacturer AS manufacturer,
         admin.username AS nama
         from produk
-        join admin on produk.id_admin=admin.id_admin";
-$query =mysqli_query($koneksi,$sql);
+        join admin on produk.id_admin=admin.id_admin
+        join kategori on produk.id_kategori=kategori.id_kategori
+        join manufacturer on produk.id_manufacturer=manufacturer.id_manufacturer";
+$query = mysqli_query($koneksi,$sql);
+
+$sql_kategori = "SELECT * FROM kategori";
+$query_kategori = mysqli_query($koneksi,$sql_kategori);
+
+$sql_manufacturer = "SELECT * FROM manufacturer";
+$query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
 ?>
 
 <!DOCTYPE html>
@@ -36,10 +44,10 @@ $query =mysqli_query($koneksi,$sql);
     <header>
         <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" ></a>
         <nav>
-            <div class="profile-icon">    
+            <div class="profile-icon">
+                <a href="tambah_kategori.php">Add Category</a>
                 <a href="daftar_transaksi.php">Orders</a>
                 <a href="DaftarProduk.php">Products</a>
-                <a href="about.php">About</a>
                 <a href="admin.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>
@@ -47,7 +55,7 @@ $query =mysqli_query($koneksi,$sql);
 
     <main>
         <div class="form-container">
-            <h1>Tambah Produk</h1>
+            <h1>Table Produk</h1>
             <form action="tambahProduk.php" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="">Nama Produk</label>
@@ -58,18 +66,20 @@ $query =mysqli_query($koneksi,$sql);
                     <label for="">Kategori</label>
                     <select name="kategori" id="">
                         <option value="" disabled selected>Pilih Kategori</option>
-                        <option value="Nendoroid">Nendoroid</option>
-                        <option value="Figma">Figma</option>
-                        <option value="1/12">1/12</option>
-                        <option value="1/8">1/8</option>
-                        <option value="1/7">1/7</option>
-                        <option value="1/6">1/6</option>
+                <?php while ($row = mysqli_fetch_assoc($query_kategori) ) {    ?>
+                    <option value="<?=$row['id_kategori']?>"><?=$row['nama_kategori']?></option>
+                <?php } ?>
                     </select>
                 </div>
                     
                 <div class="form-group">
-                    <label for="">Manufacture</label>
-                    <input type="text" name="manufacturer" id="" placeholder="nama manufaktur">
+                    <label for="">Manufacturer</label>
+                    <select name="manufacturer" id="">
+                        <option value="" disabled selected>Pilih manufacture</option>
+                <?php while ($row1 = mysqli_fetch_assoc($query_manufacturer) ) {    ?>
+                    <option value="<?=$row1['id_manufacturer']?>"><?=$row1['nama_manufacturer']?></option>
+                <?php } ?>
+                    </select>
                 </div>
 
                 <div class="form-group">

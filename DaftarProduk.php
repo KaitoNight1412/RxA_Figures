@@ -70,11 +70,11 @@ $query = mysqli_query($koneksi, $sql_produk);
 $jumlah_hasil = mysqli_num_rows($query);
 
 // Query untuk mengambil daftar kategori
-$sql_kategori = "SELECT DISTINCT kategori FROM produk";
+$sql_kategori = "SELECT DISTINCT nama_kategori FROM kategori";
 $category_query = mysqli_query($koneksi, $sql_kategori);
 $categories = [];
 while ($row = mysqli_fetch_assoc($category_query)) {
-    $categories[] = $row['kategori'];
+    $categories[] = $row['nama_kategori'];
 }
 
 // Query untuk mengambil daftar manufacturer

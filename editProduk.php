@@ -12,6 +12,12 @@ $id_produk= $_GET['id_produk'];
 $sql = "Select * from produk where id_produk='$id_produk' ";
 $query = mysqli_query($koneksi,$sql);
 
+$sql_kategori = "SELECT * FROM kategori";
+$query_kategori = mysqli_query($koneksi,$sql_kategori);
+
+$sql_manufacturer = "SELECT * FROM manufacturer";
+$query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
+
 while($produk=mysqli_fetch_assoc($query)) {
 ?>
 
@@ -30,9 +36,7 @@ while($produk=mysqli_fetch_assoc($query)) {
         <nav>
             <div class="profile-icon">    
                 <a href="dashboard.php">Add Product</a>
-                <a href="daftar_transaksi.php">Orders</a>
                 <a href="DaftarProduk.php">Products</a>
-                <a href="about.php">About</a>
                 <a href="admin.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>
@@ -40,7 +44,7 @@ while($produk=mysqli_fetch_assoc($query)) {
 
     <main>
         <div class="form-container">
-            <h1>Edit Produk</h1>
+            <h1>Form Edit</h1>
             <form action="Proses_editProduk.php" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <input type="hidden" name="id_produk" value="<?= $produk['id_produk'] ?>">
@@ -54,20 +58,34 @@ while($produk=mysqli_fetch_assoc($query)) {
 
                 <div class="form-group">
                     <label for="">Kategori</label>
-                    <select name="kategori" required>
-                        <option value="" disabled <?= ($produk['kategori'] == '') ? 'selected' : '' ?>>Pilih Kategori</option>
-                        <option value="Nendoroid" <?= ($produk['kategori'] == 'Nendoroid') ? 'selected' : '' ?>>Nendoroid</option>
-                        <option value="Figma" <?= ($produk['kategori'] == 'Figma') ? 'selected' : '' ?>>Figma</option>
-                        <option value="1/12" <?= ($produk['kategori'] == '1/12') ? 'selected' : '' ?>>1/12</option>
-                        <option value="1/8" <?= ($produk['kategori'] == '1/8') ? 'selected' : '' ?>>1/8</option>
-                        <option value="1/7" <?= ($produk['kategori'] == '1/7') ? 'selected' : '' ?>>1/7</option>
-                        <option value="1/6" <?= ($produk['kategori'] == '1/6') ? 'selected' : '' ?>>1/6</option>
+                    <select name="kategori" id="">
+                        <option value="" disabled>Pilih Kategori</option>
+                        <?php 
+                        // Reset pointer query kategori ke awal
+                        mysqli_data_seek($query_kategori, 0);
+                        while ($row = mysqli_fetch_assoc($query_kategori)) { 
+                            // Cek apakah kategori ini yang dipilih sebelumnya
+                            $selected = ($row['id_kategori'] == $produk['id_kategori']) ? 'selected' : '';
+                        ?>
+                            <option value="<?= $row['id_kategori'] ?>" <?= $selected ?>><?= $row['nama_kategori'] ?></option>
+                        <?php } ?>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="">Manufacturer</label>
-                    <input type="text" name="manufacturer" value="<?= $produk['manufacturer'] ?>" required>
+                    <select name="manufacturer" id="">
+                        <option value="" disabled>Pilih Manufacturer</option>
+                        <?php 
+                        // Reset pointer query manufacturer ke awal
+                        mysqli_data_seek($query_manufacturer, 0);
+                        while ($row1 = mysqli_fetch_assoc($query_manufacturer)) { 
+                            // Cek apakah manufacturer ini yang dipilih sebelumnya
+                            $selected = ($row1['id_manufacturer'] == $produk['id_manufacturer']) ? 'selected' : '';
+                        ?>
+                            <option value="<?= $row1['id_manufacturer'] ?>" <?= $selected ?>><?= $row1['nama_manufacturer'] ?></option>
+                        <?php } ?>
+                    </select>
                 </div>
 
                 <div class="form-group">
