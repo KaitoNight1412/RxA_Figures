@@ -108,7 +108,7 @@ while ($produk = mysqli_fetch_assoc($query)) {
         if ($$produk['stok'] > 0) {
             document.getElementById('qty-input').value = 1;
         } else {
-                    document.getElementById('qty-input').value = 0;
+            document.getElementById('qty-input').value = 0;
         }
     </script>
 
@@ -123,18 +123,18 @@ while ($produk = mysqli_fetch_assoc($query)) {
             });
         </script>
 
-        <?php elseif (isset($_GET['error'])): ?>
-            <script>
-                Swal.fire({
-                title: 'Gagal!',
-                text: '<?php
-                    if ($_GET["error"] === "insert_failed") echo "Gagal menambahkan ke keranjang.";
-                    elseif ($_GET["error"] === "product_not_found") echo "Produk tidak ditemukan.";
-                    else echo "Terjadi kesalahan."; ?>',
-                icon: 'error',
-                confirmButtonText: 'OK'
-                });
-            </script>
+    <?php elseif (isset($_GET['error'])): ?>
+        <script>
+            Swal.fire({
+            title: 'Gagal!',
+            text: '<?php
+                if ($_GET["error"] === "insert_failed") echo "Gagal menambahkan ke keranjang.";
+                elseif ($_GET["error"] === "product_not_found") echo "Produk tidak ditemukan.";
+                else echo "Terjadi kesalahan."; ?>',
+            icon: 'error',
+            confirmButtonText: 'OK'
+            });
+        </script>
     <?php endif; ?>
 
     <script>

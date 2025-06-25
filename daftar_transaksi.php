@@ -34,6 +34,25 @@ if (isset($_POST['update_status_group'])) {
     }
 }
 
+// Proses hapus transaksi melalui button jika bukti_bayar tidak cocok
+if (isset($_POST['cancel'])) {
+    // Proses pembatalan transaksi
+    $bukti = $_POST['bukti_pembayaran'];
+    $ids = $_POST['transaction_ids'];
+
+    foreach ($ids as $id) {
+        mysqli_query($koneksi, "DELETE FROM transaksi WHERE id_transaksi = '$id'");
+        mysqli_query($koneksi, "DELETE FROM pembayaran WHERE id_transaksi = '$id'");
+    }
+
+    // Hapus file bukti
+    if (file_exists("bukti_bayar/$bukti")) {
+        unlink("bukti_bayar/$bukti");
+    }
+
+    $success_message = "Transaksi berhasil dibatalkan.";
+}
+
 // Filter berdasarkan status
 $status_filter = isset($_GET['status']) ? $_GET['status'] : 'all';
 $search = isset($_GET['search']) ? $_GET['search'] : '';
@@ -128,6 +147,7 @@ $stats = mysqli_fetch_assoc($stats_result);
             <div class="profile-icon">    
                 <a href="dashboard.php">Add Product</a>
                 <a href="DaftarProduk.php">Products</a>
+                <a href="about.php">About</a>
                 <a href="admin.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>
@@ -195,11 +215,18 @@ $stats = mysqli_fetch_assoc($stats_result);
                     <div class="transaction-info">
                         <h3>👤 <?php echo $transaction['username']; ?></h3>
                         <div class="transaction-meta">
-                            <span>📧 <?php echo $transaction['email']; ?></span>
-                            <span>📅 <?php echo date('d M Y H:i', strtotime($transaction['tanggal'])); ?></span>
-                            <span>📍 Alamat ID: <?php echo $transaction['id_alamat']; ?></span>
-                            <span>💳 Provider: <?php echo $transaction['provider']; ?></span>
-                            <span>💳 Bukti: <?php echo $transaction['bukti_pembayaran']; ?></span>
+                            <div class="transaction-meta-info">
+                                <div class="transaction-meta-data"><strong>📧 Email:</strong> <?= htmlspecialchars($transaction['email']) ?></div>
+                                <div class="transaction-meta-data"><strong>📅 Tanggal:</strong> <?= date('d M Y H:i', strtotime($transaction['tanggal'])) ?></div>
+                                <div class="transaction-meta-data"><strong>📍 Alamat ID:</strong> <?= $transaction['id_alamat'] ?></div>
+                                <div class="transaction-meta-data"><strong>💳 Provider:</strong> <?= $transaction['provider'] ?></div>
+                                <div>
+                                    <strong>🧾 Bukti:</strong>
+                                    <a href="bukti_bayar/<?= $transaction['bukti_pembayaran'] ?>" target="_blank">
+                                        <img src="bukti_bayar/<?= $transaction['bukti_pembayaran'] ?>" alt="Bukti" style="max-height: 60px; vertical-align: middle; border: 1px solid #ccc; padding: 2px;">
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="transaction-actions">
@@ -232,20 +259,22 @@ $stats = mysqli_fetch_assoc($stats_result);
                         </div>
                     <?php endforeach; ?>
 
-                    <!-- Form update status untuk SEMUA transaksi dengan bukti pembayaran yang sama -->
-                    <form method="POST" style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; display: flex; gap: 1rem; align-items: center;">
-                        <!-- Hidden inputs untuk semua ID transaksi dalam grup ini -->
+                    <form method="POST" style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
                         <?php foreach ($transaction['transaction_ids'] as $trans_id): ?>
-                            <input type="hidden" name="transaction_ids[]" value="<?php echo $trans_id; ?>">
+                            <input type="hidden" name="transaction_ids[]" value="<?= $trans_id ?>">
                         <?php endforeach; ?>
-                        
-                        <label style="font-weight: 600;">Update Status Semua Produk:</label>
+                        <input type="hidden" name="bukti_pembayaran" value="<?= $transaction['bukti_pembayaran'] ?>">
+
+                        <label style="font-weight: 600;">Update Status:</label>
                         <select name="status_baru" class="status-select">
-                            <option value="Belum Dikirim" <?php echo $transaction['status'] == 'Belum Dikirim' ? 'selected' : ''; ?>>Belum Dikirim</option>
-                            <option value="Dikirim" <?php echo $transaction['status'] == 'Dikirim' ? 'selected' : ''; ?>>Dikirim</option>
+                            <option value="Belum Dikirim" <?= $transaction['status'] == 'Belum Dikirim' ? 'selected' : '' ?>>Belum Dikirim</option>
+                            <option value="Dikirim" <?= $transaction['status'] == 'Dikirim' ? 'selected' : '' ?>>Dikirim</option>
                         </select>
-                        <button type="submit" name="update_status_group" class="update-btn">💾 Update Semua</button>
+
+                        <button type="submit" name="update_status_group" class="update-btn">💾 Update Status</button>
+                        <button type="submit" formaction="cancel_trnsk.php" name="cancel" class="cancel-btn" style="background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px;" onclick="return confirm('Yakin ingin membatalkan transaksi ini?')">❌ Batalkan</button>
                     </form>
+
                 </div>
 
                 <div class="transaction-summary">
@@ -269,17 +298,16 @@ $stats = mysqli_fetch_assoc($stats_result);
     </main>
 
     <footer>
-        <div class="footer-left">
+        <div class="footer-center">
             <p>Official Social Media Account</p>
             <div class="social-icons">
                 <a href="https://x.com/" class="x-icon"><i class="fa-brands fa-x-twitter"></i></a>
                 <a href="https://www.youtube.com/" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
                 <a href="https://www.instagram.com/" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
             </div>
-        </div>
-        <div class="footer-right">
-            <a href="about.php">About Us</a>
-            <a href="homepage.php">R&A Figure Store</a>
+            <div class="copyright">
+                &copy; <?= date('Y') ?> R&A Figure Store. All right reserved.
+            </div>
         </div>
     </footer>
 
@@ -301,13 +329,23 @@ $stats = mysqli_fetch_assoc($stats_result);
         // Confirm before updating status
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', function(e) {
-                const statusSelect = this.querySelector('select[name="status_baru"]');
-                const currentStatus = statusSelect.dataset.current || '';
-                const newStatus = statusSelect.value;
-                
-                if (currentStatus !== newStatus) {
-                    if (!confirm(`Apakah Anda yakin ingin mengubah status transaksi menjadi "${newStatus}"?`)) {
+                const submitter = e.submitter; // deteksi tombol mana yang dipakai
+
+                if (submitter && submitter.name === 'cancel') {
+                    const confirmCancel = confirm("Apakah Anda yakin ingin membatalkan transaksi ini? Semua data akan dihapus!");
+                    if (!confirmCancel) {
                         e.preventDefault();
+                        return false;
+                    }
+                }
+
+                if (submitter && submitter.name === 'update_status_group') {
+                    const statusSelect = this.querySelector('select[name="status_baru"]');
+                    const newStatus = statusSelect.value;
+                    const confirmUpdate = confirm(`Yakin ingin mengubah status menjadi "${newStatus}"?`);
+                    if (!confirmUpdate) {
+                        e.preventDefault();
+                        return false;
                     }
                 }
             });

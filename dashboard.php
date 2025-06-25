@@ -39,6 +39,7 @@ $query =mysqli_query($koneksi,$sql);
             <div class="profile-icon">    
                 <a href="daftar_transaksi.php">Orders</a>
                 <a href="DaftarProduk.php">Products</a>
+                <a href="about.php">About</a>
                 <a href="admin.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>
@@ -46,7 +47,7 @@ $query =mysqli_query($koneksi,$sql);
 
     <main>
         <div class="form-container">
-            <h1>Table Produk</h1>
+            <h1>Tambah Produk</h1>
             <form action="tambahProduk.php" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="">Nama Produk</label>
@@ -67,7 +68,7 @@ $query =mysqli_query($koneksi,$sql);
                 </div>
                     
                 <div class="form-group">
-                    <label for="">manufacturer</label>
+                    <label for="">Manufacture</label>
                     <input type="text" name="manufacturer" id="" placeholder="nama manufaktur">
                 </div>
 
@@ -162,17 +163,16 @@ $query =mysqli_query($koneksi,$sql);
     </main>
 
     <footer>
-        <div class="footer-left">
+        <div class="footer-center">
             <p>Official Social Media Account</p>
             <div class="social-icons">
                 <a href="https://x.com/" class="x-icon"><i class="fa-brands fa-x-twitter"></i></a>
                 <a href="https://www.youtube.com/" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
                 <a href="https://www.instagram.com/" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
             </div>
-        </div>
-        <div class="footer-right">
-            <a href="about.php">About Us</a>
-            <a href="homepage.php">R&A Figure Store</a>
+            <div class="copyright">
+                &copy; <?= date('Y') ?> R&A Figure Store. All right reserved.
+            </div>
         </div>
     </footer>
 

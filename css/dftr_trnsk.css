@@ -216,6 +216,10 @@ nav a {
     flex-wrap: wrap;
 }
 
+.transaction-meta-data {
+    margin-bottom: 0.5rem;
+}
+
 .transaction-actions {
     display: flex;
     gap: 0.5rem;
@@ -387,10 +391,19 @@ nav a {
         grid-template-columns: 1fr;
     }
 
+    .transaction-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        font-size: 15px;
+        margin-top: 10px;
+    }
+
     .transaction-actions {
         justify-content: center;
         margin-top: 1rem;
     }
+
 
     .product-item {
         grid-template-columns: 60px 1fr;
@@ -408,37 +421,35 @@ nav a {
 footer {
     margin-top: 80px;
     border-top: 3px solid orange;
-    padding: 20px 30px;
+    padding: 30px 10px;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
 }
 
-.footer-left p {
+.footer-center p {
     margin-bottom: 10px;
-    font-size: 15px;
+    font-size: 16px;
 }
 
-.footer-left a {
+.footer-center .social-icons {
+    margin-bottom: 15px;
+}
+
+.footer-center a {
+    margin: 0 10px;
     color: black;
+    font-size: 18px;
 }
 
-.social-icons img {
-    height: 24px;
-    margin-right: 10px;
+.footer-center .copyright {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
 }
 
 .footer-right {
-    display: flex;
-    gap: 20px; /* Jarak antar link */
-    justify-content: flex-end; /* Sejajarkan ke kanan */
-    align-items: center;
-}
-
-.footer-right a {
-    text-decoration: none; /* Hilangkan underline */
-    color: #222;
-    font-size: 15px;
-    font-family: monospace;
+    display: none; /* Sembunyikan bagian kanan */
 }

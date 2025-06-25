@@ -31,8 +31,8 @@ include "koneksi.php";
             <form action="proses_login.php" method="post">
                 <label>Username</label>
                 <input type="text" name="username" id="" placeholder="Username" required>
-
-                <label>Password (Must include at least one uppercase letter, one lowercase letter, one number and one special character)</label>
+                    <!-- (Must include at least one uppercase letter, one lowercase letter, one number and one special character) -->
+                <label>Password</label>
                 <input type="password" name="password" id="" placeholder="Password" required>
 
                 <button type="submit">Login</button>
@@ -52,17 +52,16 @@ include "koneksi.php";
     </main>
 
     <footer>
-        <div class="footer-left">
+        <div class="footer-center">
             <p>Official Social Media Account</p>
             <div class="social-icons">
                 <a href="https://x.com/" class="x-icon"><i class="fa-brands fa-x-twitter"></i></a>
                 <a href="https://www.youtube.com/" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
                 <a href="https://www.instagram.com/" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
             </div>
-        </div>
-        <div class="footer-right">
-            <a href="about.php">About Us</a>
-            <a href="DaftarProduk.php">R&A Figure Store</a>
+            <div class="copyright">
+                &copy; <?= date('Y') ?> R&A Figure Store. All right reserved.
+            </div>
         </div>
     </footer>
 

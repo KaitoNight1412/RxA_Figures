@@ -40,7 +40,8 @@ $jumlah_keranjang = mysqli_num_rows($query);
         <nav>
             <div class="profile-icon">    
                 <a href="DaftarProduk.php">Products</a>
-                <a href="keranjang.php">Cart</a>
+                <a href="log_transaksi.php">History</a>
+                <a href="about.php">About</a>
                 <a href="cek_profil.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>
@@ -96,17 +97,16 @@ $jumlah_keranjang = mysqli_num_rows($query);
     </main>
 
     <footer>
-        <div class="footer-left">
+        <div class="footer-center">
             <p>Official Social Media Account</p>
             <div class="social-icons">
                 <a href="https://x.com/" class="x-icon"><i class="fa-brands fa-x-twitter"></i></a>
                 <a href="https://www.youtube.com/" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
                 <a href="https://www.instagram.com/" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
             </div>
-        </div>
-        <div class="footer-right">
-            <a href="about.php">About Us</a>
-            <a href="homepage.php">R&A Figure Store</a>
+            <div class="copyright">
+                &copy; <?= date('Y') ?> R&A Figure Store. All right reserved.
+            </div>
         </div>
     </footer>
     <script src="script/keranjang.js?<?=time() ?>"></script>

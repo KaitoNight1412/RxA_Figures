@@ -1,8 +1,3 @@
-<?php
-include "koneksi.php";
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,38 +31,19 @@ include "koneksi.php";
             <p>Dah itu aja.... Selamat berbelanja kawan...</p>
         </div>
         <h3>Awas khilaf !!</h3>
-
-
-        <!-- <h3 class="adm">Berikut adalah sosok admin</h3>
-        <div class="container">
-            <div class="admin_person">
-                <img src="pic_admin/JustRoff.jpg" alt="Admin 1">    
-                <p>Rofi Dwi Saputra</p>
-                <p>a.k.a</p>
-                <p>JustRoff</p>
-            </div>
-
-            <div class="admin_person">
-                <img src="pic_admin/KaitoNight.jpg" alt="Admin 2">
-                <p>Muhammad Alif Nurul Insan</p>
-                <p>a.k.a</p>
-                <p>KaitoNight</p>
-            </div>
-        </div> -->
     </main>
 
     <footer>
-        <div class="footer-left">
+        <div class="footer-center">
             <p>Official Social Media Account</p>
             <div class="social-icons">
                 <a href="https://x.com/" class="x-icon"><i class="fa-brands fa-x-twitter"></i></a>
                 <a href="https://www.youtube.com/" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
                 <a href="https://www.instagram.com/" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
             </div>
-        </div>
-        <div class="footer-right">
-            <a href="about.php">About us</a>
-            <a href="DaftarProduk.php">R&A Figure Store</a>
+            <div class="copyright">
+                &copy; <?= date('Y') ?> R&A Figure Store. All right reserved.
+            </div>
         </div>
     </footer>
 </body>
