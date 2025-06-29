@@ -1,3 +1,11 @@
+<?php
+session_start();
+include "koneksi.php";
+
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,10 +19,23 @@
     <header>
         <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" ></a>
         <nav>
-            <div class="profile-icon">    
-                <!-- <a href="dashboard.php"><strong>Add Product</strong></a> -->
-                <a href="DaftarProduk.php"><strong>Products</strong></a>
-                <a href="cek_profil.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
+            <div class="profile-icon">
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <a href="dashboard.php">Add Product</a>
+                    <a href="daftar_transaksi.php">Orders</a>
+                    <a href="DaftarProduk.php">Products</a>
+                    <a href="about.php">About</a>
+                    <a href="admin.php"><img src="img/user/user.png" alt="Admin Icon" class="profile"></a>
+                <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'user'): ?>
+                    <a href="keranjang.php">Cart</a>
+                    <a href="log_transaksi.php">History</a>
+                    <a href="DaftarProduk.php">Products</a>
+                    <a href="about.php">About</a>
+                    <a href="user.php"><img src="img/user/user.png" alt="User Icon" class="profile"></a>
+                <?php else: ?>
+                    <a href="DaftarProduk.php">Products</a>
+                    <a href="login1.php">Login</a>
+                <?php endif; ?>
             </div>
         </nav>
     </header>

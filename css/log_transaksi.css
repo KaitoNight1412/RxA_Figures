@@ -129,22 +129,34 @@ main {
 }
 
 .status {
-    font-size: 1em;
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 12px;
-    margin-top: 5px;
+    font-weight: bold;
+    font-size: 15px;
+    text-transform: capitalize;
     display: inline-block;
 }
 
-.status.belum-dikirim {
-    background: #fff3cd;
-    color: #856404;
+.status.belum-dibayar {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.status.dibayar {
+    background-color: #17a2b8;
+    color: white;
 }
 
 .status.dikirim {
-    background: #d4edda;
-    color: #155724;
+    background-color: #007bff;
+    color: white;
 }
+
+.status.selesai {
+    background-color: #28a745;
+    color: white;
+}
+
 
 .transaction-details {
     max-height: 0;

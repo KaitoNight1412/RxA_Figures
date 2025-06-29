@@ -13,59 +13,64 @@ $selected_manufacturers = isset($_GET['manufacturers']) ? $_GET['manufacturers']
 $start_month = isset($_GET['start_month']) ? $_GET['start_month'] : null;
 $end_month = isset($_GET['end_month']) ? $_GET['end_month'] : null;
 $sort = isset($_GET['sort']) ? $_GET['sort'] : null;
-// Query untuk mengambil produk
-$sql_produk = "SELECT * FROM produk WHERE 1=1";
+
+// Query untuk mengambil produk dengan JOIN ke tabel kategori dan manufacturer
+$sql_produk = "SELECT p.*, k.nama_kategori, m.nama_manufacturer 
+               FROM produk p 
+               LEFT JOIN kategori k ON p.id_kategori = k.id_kategori 
+               LEFT JOIN manufacturer m ON p.id_manufacturer = m.id_manufacturer 
+               WHERE 1=1";
 
 $min_price = isset($_GET['min_price']) ? (int)str_replace('.', '', $_GET['min_price']) : null;
 $max_price = isset($_GET['max_price']) ? (int)str_replace('.', '', $_GET['max_price']) : null;
 
-
 if (!empty($keywords)) {
-    $sql_produk .= " AND nama_produk LIKE '%$keywords%'";
+    $sql_produk .= " AND p.nama_produk LIKE '%$keywords%'";
 }
 
 if (!empty($selected_categories)) {
     $category_filter = implode("','", $selected_categories);
-    $sql_produk .= " AND kategori IN ('$category_filter')";
+    $sql_produk .= " AND k.nama_kategori IN ('$category_filter')";
 }
 
 if (!empty($selected_manufacturers)) {
     $manufacturer_filter = implode("','", $selected_manufacturers);
-    $sql_produk .= " AND manufacturer IN ('$manufacturer_filter')";
+    $sql_produk .= " AND m.nama_manufacturer IN ('$manufacturer_filter')";
 }
 
 if (!empty($min_price)) {
-    $sql_produk .= " AND harga >= $min_price";
+    $sql_produk .= " AND p.harga >= $min_price";
 }
 
 if (!empty($max_price)) {
-    $sql_produk .= " AND harga <= $max_price";
+    $sql_produk .= " AND p.harga <= $max_price";
 }
 
 if (!empty($start_month)) {
     $start_month .= '-01';
-    $sql_produk .= " AND tanggal_terbit >= '$start_month'";
+    $sql_produk .= " AND p.tanggal_terbit >= '$start_month'";
 }
 
 if (!empty($end_month)) {
     $end_month .= '-31'; 
-    $sql_produk .= " AND tanggal_terbit <= '$end_month'";
+    $sql_produk .= " AND p.tanggal_terbit <= '$end_month'";
 }
 
 switch ($sort) {
     case 'oldest':
-        $sql_produk .= " ORDER BY (CASE WHEN stok > 0 THEN 0 ELSE 1 END), tanggal_terbit ASC";
+        $sql_produk .= " ORDER BY (CASE WHEN p.stok > 0 THEN 0 ELSE 1 END), p.tanggal_terbit ASC";
         break;
     case 'highest_price':
-        $sql_produk .= " ORDER BY (CASE WHEN stok > 0 THEN 0 ELSE 1 END), harga DESC";
+        $sql_produk .= " ORDER BY (CASE WHEN p.stok > 0 THEN 0 ELSE 1 END), p.harga DESC";
         break;
     case 'lowest_price':
-        $sql_produk .= " ORDER BY (CASE WHEN stok > 0 THEN 0 ELSE 1 END), harga ASC";
+        $sql_produk .= " ORDER BY (CASE WHEN p.stok > 0 THEN 0 ELSE 1 END), p.harga ASC";
         break;
     default:
-        $sql_produk .= " ORDER BY (CASE WHEN stok > 0 THEN 0 ELSE 1 END), tanggal_terbit DESC"; // default = latest
+        $sql_produk .= " ORDER BY (CASE WHEN p.stok > 0 THEN 0 ELSE 1 END), p.tanggal_terbit DESC"; // default = latest
         break;
 }
+
 $query = mysqli_query($koneksi, $sql_produk);
 $jumlah_hasil = mysqli_num_rows($query);
 
@@ -78,11 +83,11 @@ while ($row = mysqli_fetch_assoc($category_query)) {
 }
 
 // Query untuk mengambil daftar manufacturer
-$sql_manufacturer = "SELECT DISTINCT manufacturer from produk";
+$sql_manufacturer = "SELECT DISTINCT nama_manufacturer FROM manufacturer";
 $manufacturer_query = mysqli_query($koneksi, $sql_manufacturer);
-$manufacturers= [];
+$manufacturers = [];
 while ($row = mysqli_fetch_assoc($manufacturer_query)) {
-    $manufacturers[] = $row['manufacturer'];
+    $manufacturers[] = $row['nama_manufacturer'];
 }
 ?>
 <!DOCTYPE html>
@@ -116,7 +121,6 @@ while ($row = mysqli_fetch_assoc($manufacturer_query)) {
                 <?php endif; ?>
             </div>
         </nav>
-
     </header>
 
     <main>
@@ -133,12 +137,11 @@ while ($row = mysqli_fetch_assoc($manufacturer_query)) {
                 </div>
                 
                 <label for="">Sort by</label>
-                <select name="sort" id="sortby"  onchange="this.form.submit()">
+                <select name="sort" id="sortby" onchange="this.form.submit()">
                     <option value="">latest</option>
                     <option value="oldest" <?= ($sort == 'oldest') ? 'selected' : '' ?>>Oldest</option>
                     <option value="highest_price" <?= ($sort == 'highest_price') ? 'selected' : '' ?>>Highest Price</option>
                     <option value="lowest_price" <?= ($sort == 'lowest_price') ? 'selected' : '' ?>>Lowest Price</option>
-
                 </select>
 
                 <!-- Tombol Modal -->
@@ -146,24 +149,23 @@ while ($row = mysqli_fetch_assoc($manufacturer_query)) {
                 <button type="button" class="rounded-button btn-orange" onclick="document.getElementById('ManufacturerModal').style.display='block'">Search by Manufacturer</button>
             </div>
 
-                <!-- Filter Harga -->
-                <div class="price-filter">
-                    <label>Harga Min:</label>
-                    <input type="number" name="min_price" class="search-input" id="minPrice" placeholder="Min" value="<?= isset($_GET['min_price']) ? $_GET['min_price'] : '' ?>" min="0">
-                    
-                    <label>Harga Max:</label>
-                    <input type="number" name="max_price" class="search-input" id="maxPrice" placeholder="Max" value="<?= isset($_GET['max_price']) ? $_GET['max_price'] : '' ?>" min="0">
-                </div>
+            <!-- Filter Harga -->
+            <div class="price-filter">
+                <label>Harga Min:</label>
+                <input type="number" name="min_price" class="search-input" id="minPrice" placeholder="Min" value="<?= isset($_GET['min_price']) ? $_GET['min_price'] : '' ?>" min="0">
+                
+                <label>Harga Max:</label>
+                <input type="number" name="max_price" class="search-input" id="maxPrice" placeholder="Max" value="<?= isset($_GET['max_price']) ? $_GET['max_price'] : '' ?>" min="0">
+            </div>
 
-                <!-- Filter Bulan -->
-                <div class="month-filter">
-                    <label>Bulan Terbit Dari:</label>
-                    <input type="text" id="startMonth" name="start_month" class="search-input" value="<?= isset($_GET['start_month']) ? $_GET['start_month'] : '' ?>" placeholder="Pilih Bulan Mulai">
+            <!-- Filter Bulan -->
+            <div class="month-filter">
+                <label>Bulan Terbit Dari:</label>
+                <input type="text" id="startMonth" name="start_month" class="search-input" value="<?= isset($_GET['start_month']) ? $_GET['start_month'] : '' ?>" placeholder="Pilih Bulan Mulai">
 
-                    <label>Sampai:</label>
-                    <input type="text" id="endMonth" name="end_month" class="search-input" value="<?= isset($_GET['end_month']) ? $_GET['end_month'] : '' ?>" placeholder="Pilih Bulan Akhir">
-                </div>
-
+                <label>Sampai:</label>
+                <input type="text" id="endMonth" name="end_month" class="search-input" value="<?= isset($_GET['end_month']) ? $_GET['end_month'] : '' ?>" placeholder="Pilih Bulan Akhir">
+            </div>
 
             <!-- Modal Kategori -->
             <div id="KategoriModal" class="filter-modal">
@@ -198,16 +200,18 @@ while ($row = mysqli_fetch_assoc($manufacturer_query)) {
             <?php if ($jumlah_hasil > 0) { ?>
                 <?php while ($produk = mysqli_fetch_assoc($query)) { ?>
                     <a href="produk.php?id_produk=<?= $produk['id_produk'] ?>" style="text-decoration: none; color: inherit;">
-                <div class="produk-item">
-                    <img src="gambar_produk/<?= $produk['gambar'] ?>" alt="<?= $produk['nama_produk'] ?>">
-                    <p><span class="status <?= ($produk['stok'] > 0) ? 'available' : 'sold-out' ?>">
-                        <?= ($produk['stok'] > 0) ? 'Available' : 'Sold Out' ?></span>
-                    </p>
-                    <h3><?= $produk['nama_produk'] ?></h3>
-                    <p>Harga: <strong>Rp <?= number_format($produk['harga'], 0, ',', '.') ?></strong></p>
-                </div>
-            </a>
-        <?php } ?>
+                        <div class="produk-item">
+                            <img src="gambar_produk/<?= $produk['gambar'] ?>" alt="<?= $produk['nama_produk'] ?>">
+                            <p><span class="status <?= ($produk['stok'] > 0) ? 'available' : 'sold-out' ?>">
+                                <?= ($produk['stok'] > 0) ? 'Available' : 'Sold Out' ?></span>
+                            </p>
+                            <h3><?= $produk['nama_produk'] ?></h3>
+                            <p>Harga: <strong>Rp <?= number_format($produk['harga'], 0, ',', '.') ?></strong></p>
+                            <!-- <p>Kategori: <?= $produk['nama_kategori'] ?? 'Tidak tersedia' ?></p> -->
+                            <!-- <p>Manufacturer: <?= $produk['nama_manufacturer'] ?? 'Tidak tersedia' ?></p> -->
+                        </div>
+                    </a>
+                <?php } ?>
             <?php } else { ?>
                 <img src="img_properties/pic.jpg" alt="Tobangado" class="error">
                 <p style="text-align: center; font-size: 18px; color: red;">Maaf, sepertinya barang yang kamu cari tidak ada.</p>

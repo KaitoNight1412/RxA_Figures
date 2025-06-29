@@ -26,6 +26,7 @@ if (!isset($_SESSION['id_user'])) {
             <div class="profile-icon">    
                 <a href="DaftarProduk.php">Products</a>
                 <a href="keranjang.php">Cart</a>
+                <a href="log_transaksi.php">History</a>
                 <a href="about.php">About</a>
                 <a href="user.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>

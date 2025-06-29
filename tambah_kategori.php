@@ -37,27 +37,30 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
     </header>
 
     <main>
-        <div class="form-container">
-            <h1>Table kategori</h1>
-            <form action="tambahkategori.php" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="">Nama Kategori</label>
-                    <input type="text" name="nama_kategori" id="" placeholder="nama kategori">
-                </div>
-                <button type="submit">Tambah</button>
-            </form>
-        </div>
+        <div class="form-flex-container">
+            <div class="form-box">
+                <h1>Table kategori</h1>
+                <form action="tambahkategori.php" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="">Nama Kategori</label>
+                        <input type="text" name="nama_kategori" id="" placeholder="nama kategori">
+                    </div>
+                    <button type="submit">Tambah</button>
+                </form>
+            </div>
 
-        <div class="form-container">
-            <h1>Table Manufacturer</h1>
-            <form action="tambahmanufacturer.php" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="">Nama Manufacturer</label>
-                    <input type="text" name="nama_manufacturer" id="" placeholder="nama manufacturer">
-                </div>
-                <button type="submit">Tambah</button>
-            </form>
+            <div class="form-box">
+                <h1>Table Manufacturer</h1>
+                <form action="tambahmanufacturer.php" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="">Nama Manufacturer</label>
+                        <input type="text" name="nama_manufacturer" id="" placeholder="nama manufacturer">
+                    </div>
+                    <button type="submit">Tambah</button>
+                </form>
+            </div>
         </div>
+        
 
         <br>
 

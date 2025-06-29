@@ -9,7 +9,21 @@ if (!isset($_SESSION['id_admin']) && !isset($_SESSION['id_user'])) {
 
 $id_produk = $_GET['id_produk'];
 
-$sql = "SELECT * FROM produk WHERE id_produk = '$id_produk' ";
+$sql = "SELECT produk.id_produk,
+        produk.nama_produk,
+        produk.tanggal_terbit,
+        produk.harga,
+        produk.stok,
+        produk.rating,
+        produk.gambar,
+        produk.deskripsi,
+        kategori.nama_kategori AS kategori,
+        manufacturer.nama_manufacturer AS manufacturer
+        from produk
+        join kategori on produk.id_kategori=kategori.id_kategori
+        join manufacturer on produk.id_manufacturer=manufacturer.id_manufacturer
+        where id_produk = '$id_produk' ";
+
 $query = mysqli_query($koneksi,$sql);
 
 while ($produk = mysqli_fetch_assoc($query)) {
@@ -31,9 +45,21 @@ while ($produk = mysqli_fetch_assoc($query)) {
         <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" ></a>
         <nav>
             <div class="profile-icon">    
-                <a href="DaftarProduk.php">Products</a>
-                <a href="keranjang.php">Cart</a>
-                <a href="cek_profil.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <a href="dashboard.php">Add Product</a>
+                    <a href="daftar_transaksi.php">Orders</a>
+                    <a href="Produk.php">Products</a>
+                    <a href="about.php">About</a>
+                    <a href="admin.php"><img src="img/user/user.png" alt="Admin Icon" class="profile"></a>
+                <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'user'): ?>
+                    <a href="DaftarProduk.php">Products</a>
+                    <a href="keranjang.php">Cart</a>
+                    <a href="log_transaksi.php">History</a>
+                    <a href="about.php">About</a>
+                    <a href="user.php"><img src="img/user/user.png" alt="User Icon" class="profile"></a>
+                <?php else: ?>
+                    <a href="login1.php">Login</a>
+                <?php endif; ?>
             </div>
         </nav>
     </header>
@@ -90,25 +116,28 @@ while ($produk = mysqli_fetch_assoc($query)) {
     </main>
 
     <footer>
-        <div class="footer-left">
+        <div class="footer-center">
             <p>Official Social Media Account</p>
             <div class="social-icons">
                 <a href="https://x.com/" class="x-icon"><i class="fa-brands fa-x-twitter"></i></a>
                 <a href="https://www.youtube.com/" class="yt-icon"><i class="fa-brands fa-youtube"></i></a>
                 <a href="https://www.instagram.com/" class="ig-icon"><i class="fa-brands fa-instagram"></i></a>
             </div>
-        </div>
-        <div class="footer-right">
-            <a href="about.php">About Us</a>
-            <a href="homepage.php">R&A Figure Store</a>
+            <div class="copyright">
+                &copy; <?= date('Y') ?> R&A Figure Store. All right reserved.
+            </div>
         </div>
     </footer>
 
     <script>
-        if ($$produk['stok'] > 0) {
-            document.getElementById('qty-input').value = 1;
+        const stok = <?= $produk['stok'] ?>;
+        const qtyInput = document.getElementById('qty-input');
+        
+        if (stok <= 0) {
+            qtyInput.value = 0;
+            qtyInput.disabled = true;
         } else {
-            document.getElementById('qty-input').value = 0;
+            qtyInput.value = 1;
         }
     </script>
 
@@ -157,8 +186,6 @@ while ($produk = mysqli_fetch_assoc($query)) {
             }
         }
     </script>
-
-
 </body>
 </html>
 

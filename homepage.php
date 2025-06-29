@@ -3,8 +3,23 @@ session_start();
 include "koneksi.php";
 
 // Query untuk mengambil 16 produk terbaru berdasarkan tanggal terbit
-$query_produk = "SELECT * FROM produk ORDER BY tanggal_terbit DESC LIMIT 16";
-$result_produk = mysqli_query($koneksi, $query_produk);
+$sql = "SELECT produk.id_produk,
+        produk.nama_produk,
+        produk.tanggal_terbit,
+        produk.harga,
+        produk.stok,
+        produk.rating,
+        produk.gambar,
+        produk.deskripsi,
+        kategori.nama_kategori AS kategori,
+        manufacturer.nama_manufacturer AS manufacturer,
+        admin.username AS nama
+        from produk
+        join admin on produk.id_admin=admin.id_admin
+        join kategori on produk.id_kategori=kategori.id_kategori
+        join manufacturer on produk.id_manufacturer=manufacturer.id_manufacturer
+        ORDER BY tanggal_terbit DESC LIMIT 16";
+$query_produk = mysqli_query($koneksi,$sql);
 
 ?>
 
@@ -95,8 +110,8 @@ $result_produk = mysqli_query($koneksi, $query_produk);
         <div class="product-section">
             <h2>Latest Products</h2>
             <div class="product-grid">
-                <?php if (mysqli_num_rows($result_produk) > 0): ?>
-                    <?php while ($produk = mysqli_fetch_assoc($result_produk)): ?>
+                <?php if (mysqli_num_rows($query_produk) > 0): ?>
+                    <?php while ($produk = mysqli_fetch_assoc($query_produk)): ?>
                         <div class="product-card">
                             <a href="produk.php?id_produk=<?= $produk['id_produk'] ?>" >
                             <?php if (!empty($produk['gambar'])): ?>

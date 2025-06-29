@@ -46,7 +46,42 @@ nav a {
     background-color: transparent;
 }
 
-.form-container {
+.form-flex-container {
+    display: flex;
+    gap: 40px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 2%;
+    margin-bottom: 30px;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.form-box {
+    flex: 1 1 45%;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.form-box h1 {
+    margin-bottom: 3%;
+    font-size: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+input[type="text"] {
+    margin-top: 1%;
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+/*.form-container {
     width: 600px;
     margin: 40px auto;
     padding: 30px 40px;
@@ -65,7 +100,7 @@ nav a {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-}
+}*/
 
 .form-group label {
     flex: 1;

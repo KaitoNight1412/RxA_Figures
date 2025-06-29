@@ -36,7 +36,10 @@ while($produk=mysqli_fetch_assoc($query)) {
         <nav>
             <div class="profile-icon">    
                 <a href="dashboard.php">Add Product</a>
+                <a href="tambah_kategori.php">Add Category</a>
+                <a href="daftar_transaksi.php">Orders</a>
                 <a href="DaftarProduk.php">Products</a>
+                <a href="about.php">About</a>
                 <a href="admin.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>

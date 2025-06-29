@@ -18,7 +18,7 @@ $total_barang = $data['total_barang'];
 
 
 $provider = $_POST['provider'] ?? '';
-$status = 'Belum Dikirim';
+$status = 'Belum Dibayar';
 
 
 $tanggal_pemesanan = date('Y-m-d H:i:s');

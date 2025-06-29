@@ -18,8 +18,8 @@ include "koneksi.php";
         <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Figure Logo" class="logo"></a>
         <nav>
             <div class="profile-icon">
-                <a href="about.php">About us</a>
                 <a href="DaftarProduk.php">Products</a>
+                <a href="about.php">About us</a>
                 <a href="cek_profil.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>

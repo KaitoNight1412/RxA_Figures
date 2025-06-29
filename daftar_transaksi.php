@@ -2,7 +2,7 @@
 include "koneksi.php";
 session_start();
 
-// Cek apakah admin sudah login (sesuaikan dengan sistem login admin Anda)
+// Cek apakah admin sudah login
 if (!isset($_SESSION['id_admin'])) {
     header("Location: login1.php?AndaBelumLogin");
     exit;
@@ -34,23 +34,36 @@ if (isset($_POST['update_status_group'])) {
     }
 }
 
-// Proses hapus transaksi melalui button jika bukti_bayar tidak cocok
-if (isset($_POST['cancel'])) {
-    // Proses pembatalan transaksi
-    $bukti = $_POST['bukti_pembayaran'];
-    $ids = $_POST['transaction_ids'];
-
-    foreach ($ids as $id) {
-        mysqli_query($koneksi, "DELETE FROM transaksi WHERE id_transaksi = '$id'");
-        mysqli_query($koneksi, "DELETE FROM pembayaran WHERE id_transaksi = '$id'");
+// Proses batalkan pesanan (PERBAIKAN UTAMA)
+if (isset($_POST['cancel_group'])) {
+    $transaction_ids = $_POST['transaction_ids'];
+    $bukti_pembayaran = $_POST['bukti_pembayaran'];
+    
+    $success_count = 0;
+    $error_count = 0;
+    
+    foreach ($transaction_ids as $id_transaksi) {
+        // Update status menjadi "Dibatalkan" daripada menghapus
+        $update_sql = "UPDATE transaksi SET status = 'Dibatalkan' WHERE id_transaksi = $id_transaksi";
+        
+        if (mysqli_query($koneksi, $update_sql)) {
+            $success_count++;
+        } else {
+            $error_count++;
+        }
     }
-
-    // Hapus file bukti
-    if (file_exists("bukti_bayar/$bukti")) {
-        unlink("bukti_bayar/$bukti");
+    
+    // Hapus file bukti pembayaran jika ada
+    if (!empty($bukti_pembayaran) && file_exists("bukti_bayar/$bukti_pembayaran")) {
+        unlink("bukti_bayar/$bukti_pembayaran");
     }
-
-    $success_message = "Transaksi berhasil dibatalkan.";
+    
+    if ($success_count > 0) {
+        $success_message = "Berhasil membatalkan $success_count transaksi!";
+    }
+    if ($error_count > 0) {
+        $error_message = "Gagal membatalkan $error_count transaksi!";
+    }
 }
 
 // Filter berdasarkan status
@@ -112,7 +125,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             'provider' => $row['provider'],
             'produk' => [],
             'total_keseluruhan' => 0,
-            'transaction_ids' => [] // Array untuk menyimpan semua ID transaksi dalam grup ini
+            'transaction_ids' => []
         ];
     }
     $transactions[$key]['produk'][] = $row;
@@ -123,9 +136,12 @@ while ($row = mysqli_fetch_assoc($result)) {
 // Hitung statistik
 $stats_sql = "SELECT 
     COUNT(*) as total_transaksi,
-    SUM(CASE WHEN t.status = 'Belum Dikirim' THEN 1 ELSE 0 END) as belum_dikirim,
+    SUM(CASE WHEN t.status = 'Belum Dibayar' THEN 1 ELSE 0 END) as belum_dibayar,
+    SUM(CASE WHEN t.status = 'Dibayar' THEN 1 ELSE 0 END) as dibayar,
     SUM(CASE WHEN t.status = 'Dikirim' THEN 1 ELSE 0 END) as dikirim,
-    SUM(t.total_harga + t.ongkir) as total_pendapatan
+    SUM(CASE WHEN t.status = 'Selesai' THEN 1 ELSE 0 END) as selesai,
+    SUM(CASE WHEN t.status = 'Dibatalkan' THEN 1 ELSE 0 END) as dibatalkan,
+    SUM(CASE WHEN t.status = 'Selesai' THEN (t.total_harga + t.ongkir) ELSE 0 END) as total_pendapatan
 FROM transaksi t";
 $stats_result = mysqli_query($koneksi, $stats_sql);
 $stats = mysqli_fetch_assoc($stats_result);
@@ -167,12 +183,24 @@ $stats = mysqli_fetch_assoc($stats_result);
                     <div class="stat-label">Total Transaksi</div>
                 </div>
                 <div class="stat-card pending">
-                    <div class="stat-number"><?php echo number_format($stats['belum_dikirim']); ?></div>
-                    <div class="stat-label">Belum Dikirim</div>
+                    <div class="stat-number"><?php echo number_format($stats['belum_dibayar']); ?></div>
+                    <div class="stat-label">Belum Dibayar</div>
+                </div>
+                <div class="stat-card paided">
+                    <div class="stat-number"><?php echo number_format($stats['dibayar']); ?></div>
+                    <div class="stat-label">Sudah Dibayar</div>
                 </div>
                 <div class="stat-card shipped">
                     <div class="stat-number"><?php echo number_format($stats['dikirim']); ?></div>
-                    <div class="stat-label">Sudah Dikirim</div>
+                    <div class="stat-label">Dikirim</div>
+                </div>
+                <div class="stat-card finish">
+                    <div class="stat-number"><?php echo number_format($stats['selesai']); ?></div>
+                    <div class="stat-label">Selesai</div>
+                </div>
+                <div class="stat-card cancel">
+                    <div class="stat-number"><?php echo number_format($stats['dibatalkan']); ?></div>
+                    <div class="stat-label">Dibatalkan</div>
                 </div>
                 <div class="stat-card revenue">
                     <div class="stat-number">Rp <?php echo number_format($stats['total_pendapatan'], 0, ',', '.'); ?></div>
@@ -195,106 +223,124 @@ $stats = mysqli_fetch_assoc($stats_result);
                 </div>
                 <div class="filter-buttons">
                     <a href="?status=all&search=<?php echo urlencode($search); ?>" class="filter-btn <?php echo $status_filter == 'all' ? 'active' : ''; ?>">Semua</a>
-                    <a href="?status=Belum Dikirim&search=<?php echo urlencode($search); ?>" class="filter-btn <?php echo $status_filter == 'Belum Dikirim' ? 'active' : ''; ?>">Belum Dikirim</a>
+                    <a href="?status=Belum Dibayar&search=<?php echo urlencode($search); ?>" class="filter-btn <?php echo $status_filter == 'Belum Dibayar' ? 'active' : ''; ?>">Belum Dibayar</a>
+                    <a href="?status=Dibayar&search=<?php echo urlencode($search); ?>" class="filter-btn <?php echo $status_filter == 'Dibayar' ? 'active' : ''; ?>">Dibayar</a>
                     <a href="?status=Dikirim&search=<?php echo urlencode($search); ?>" class="filter-btn <?php echo $status_filter == 'Dikirim' ? 'active' : ''; ?>">Dikirim</a>
+                    <a href="?status=Selesai&search=<?php echo urlencode($search); ?>" class="filter-btn <?php echo $status_filter == 'Selesai' ? 'active' : ''; ?>">Selesai</a>
+                    <a href="?status=Dibatalkan&search=<?php echo urlencode($search); ?>" class="filter-btn <?php echo $status_filter == 'Dibatalkan' ? 'active' : ''; ?>">Dibatalkan</a>
                 </div>
             </div>
 
             <!-- Transactions -->
-<div class="transactions-grid">
-    <?php if (empty($transactions)): ?>
-        <div class="no-transactions">
-            <div class="icon">📦</div>
-            <h3>Tidak ada transaksi ditemukan</h3>
-            <p>Belum ada transaksi yang sesuai dengan filter yang dipilih</p>
-        </div>
-    <?php else: ?>
-        <?php foreach ($transactions as $key => $transaction): ?>
-            <div class="transaction-card">
-                <div class="transaction-header">
-                    <div class="transaction-info">
-                        <h3>👤 <?php echo $transaction['username']; ?></h3>
-                        <div class="transaction-meta">
-                            <div class="transaction-meta-info">
-                                <div class="transaction-meta-data"><strong>📧 Email:</strong> <?= htmlspecialchars($transaction['email']) ?></div>
-                                <div class="transaction-meta-data"><strong>📅 Tanggal:</strong> <?= date('d M Y H:i', strtotime($transaction['tanggal'])) ?></div>
-                                <div class="transaction-meta-data"><strong>📍 Alamat ID:</strong> <?= $transaction['id_alamat'] ?></div>
-                                <div class="transaction-meta-data"><strong>💳 Provider:</strong> <?= $transaction['provider'] ?></div>
-                                <div>
-                                    <strong>🧾 Bukti:</strong>
-                                    <a href="bukti_bayar/<?= $transaction['bukti_pembayaran'] ?>" target="_blank">
-                                        <img src="bukti_bayar/<?= $transaction['bukti_pembayaran'] ?>" alt="Bukti" style="max-height: 60px; vertical-align: middle; border: 1px solid #ccc; padding: 2px;">
-                                    </a>
+            <div class="transactions-grid">
+                <?php if (empty($transactions)): ?>
+                    <div class="no-transactions">
+                        <div class="icon">📦</div>
+                        <h3>Tidak ada transaksi ditemukan</h3>
+                        <p>Belum ada transaksi yang sesuai dengan filter yang dipilih</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($transactions as $key => $transaction): ?>
+                        <div class="transaction-card">
+                            <div class="transaction-header">
+                                <div class="transaction-info">
+                                    <h3>👤 <?php echo $transaction['username']; ?></h3>
+                                    <div class="transaction-meta">
+                                        <div class="transaction-meta-info">
+                                            <div class="transaction-meta-data"><strong>📧 Email:</strong> <?= htmlspecialchars($transaction['email']) ?></div>
+                                            <div class="transaction-meta-data"><strong>📅 Tanggal:</strong> <?= date('d M Y', strtotime($transaction['tanggal'])) ?></div>
+                                            <div class="transaction-meta-data"><strong>📍 Alamat ID:</strong> <?= $transaction['id_alamat'] ?></div>
+                                            <div class="transaction-meta-data"><strong>💳 Provider:</strong> <?= $transaction['provider'] ?></div>
+                                            <div>
+                                                <strong>🧾 Bukti:</strong>
+                                                <?php if (!empty($transaction['bukti_pembayaran']) && file_exists("bukti_bayar/" . $transaction['bukti_pembayaran'])): ?>
+                                                    <a href="bukti_bayar/<?= $transaction['bukti_pembayaran'] ?>" target="_blank">
+                                                        <img src="bukti_bayar/<?= $transaction['bukti_pembayaran'] ?>" alt="Bukti" style="max-height: 60px; vertical-align: middle; border: 1px solid #ccc; padding: 2px;">
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span style="color: #999; font-style: italic;">Bukti tidak tersedia</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="transaction-actions">
+                                    <span class="status-badge <?php echo strtolower(str_replace(' ', '-', $transaction['status'])); ?>">
+                                        <?php echo $transaction['status']; ?>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="transaction-products">
+                                <?php foreach ($transaction['produk'] as $produk): ?>
+                                    <div class="product-item">
+                                        <div class="product-image">
+                                            <?php if (!empty($produk['gambar'])): ?>
+                                                <img src="gambar_produk/<?php echo $produk['gambar']; ?>" alt="<?php echo $produk['nama_produk']; ?>">
+                                            <?php else: ?>
+                                                📦
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="product-details">
+                                            <h4><?php echo $produk['nama_produk']; ?></h4>
+                                            <div class="product-price">Rp <?php echo number_format($produk['harga'], 0, ',', '.'); ?></div>
+                                        </div>
+                                        <div class="product-quantity">
+                                            Qty: <?php echo $produk['jumlah_produk']; ?>
+                                        </div>
+                                        <div class="product-total">
+                                            Rp <?php echo number_format($produk['total_harga'], 0, ',', '.'); ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+
+                                <!-- FORM ACTIONS - HANYA TAMPIL JIKA STATUS BUKAN "Dibatalkan" -->
+                                <?php if ($transaction['status'] !== 'Dibatalkan'): ?>
+                                    <form method="POST" style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                                        <?php foreach ($transaction['transaction_ids'] as $trans_id): ?>
+                                            <input type="hidden" name="transaction_ids[]" value="<?= $trans_id ?>">
+                                        <?php endforeach; ?>
+                                        <input type="hidden" name="bukti_pembayaran" value="<?= $transaction['bukti_pembayaran'] ?>">
+
+                                        <label style="font-weight: 600;">Update Status:</label>
+                                        <select name="status_baru" class="status-select">
+                                            <option value="Belum Dibayar" <?= $transaction['status'] === 'Belum Dibayar' ? 'selected' : '' ?>>Belum Dibayar</option>
+                                            <option value="Dibayar" <?= $transaction['status'] === 'Dibayar' ? 'selected' : '' ?>>Dibayar</option>
+                                            <option value="Dikirim" <?= $transaction['status'] === 'Dikirim' ? 'selected' : '' ?>>Dikirim</option>
+                                            <option value="Selesai" <?= $transaction['status'] === 'Selesai' ? 'selected' : '' ?>>Selesai</option>
+                                            <option value="Dibatalkan" <?= $transaction['status'] === 'Dibatalkan' ? 'selected' : '' ?>>Dibatalkan</option>
+                                        </select>
+
+                                        <button type="submit" name="update_status_group" class="update-btn">💾 Update Status</button>
+                                        <button type="submit" name="cancel_group" class="cancel-btn" style="background-color: #dc3545; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">❌ Batalkan Pesanan</button>
+                                    </form>
+                                <?php else: ?>
+                                    <!-- PESAN JIKA SUDAH DIBATALKAN -->
+                                    <div style="margin-top: 1rem; padding: 1rem; background: #f8d7da; color: #721c24; border-radius: 8px; text-align: center;">
+                                        <strong>⚠️ Transaksi ini telah dibatalkan</strong>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="transaction-summary">
+                                <div class="summary-row">
+                                    <span>Subtotal Produk:</span>
+                                    <span>Rp <?php echo number_format($transaction['total_keseluruhan'], 0, ',', '.'); ?></span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Ongkos Kirim:</span>
+                                    <span>Rp <?php echo number_format($transaction['ongkir'], 0, ',', '.'); ?></span>
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Total Keseluruhan:</span>
+                                    <span>Rp <?php echo number_format($transaction['total_keseluruhan'] + $transaction['ongkir'], 0, ',', '.'); ?></span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="transaction-actions">
-                        <span class="status-badge <?php echo strtolower(str_replace(' ', '-', $transaction['status'])); ?>">
-                            <?php echo $transaction['status']; ?>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="transaction-products">
-                    <?php foreach ($transaction['produk'] as $produk): ?>
-                        <div class="product-item">
-                            <div class="product-image">
-                                <?php if (!empty($produk['gambar'])): ?>
-                                    <img src="gambar_produk/<?php echo $produk['gambar']; ?>" alt="<?php echo $produk['nama_produk']; ?>">
-                                <?php else: ?>
-                                    📦
-                                <?php endif; ?>
-                            </div>
-                            <div class="product-details">
-                                <h4><?php echo $produk['nama_produk']; ?></h4>
-                                <div class="product-price">Rp <?php echo number_format($produk['harga'], 0, ',', '.'); ?></div>
-                            </div>
-                            <div class="product-quantity">
-                                Qty: <?php echo $produk['jumlah_produk']; ?>
-                            </div>
-                            <div class="product-total">
-                                Rp <?php echo number_format($produk['total_harga'], 0, ',', '.'); ?>
-                            </div>
-                        </div>
                     <?php endforeach; ?>
-
-                    <form method="POST" style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                        <?php foreach ($transaction['transaction_ids'] as $trans_id): ?>
-                            <input type="hidden" name="transaction_ids[]" value="<?= $trans_id ?>">
-                        <?php endforeach; ?>
-                        <input type="hidden" name="bukti_pembayaran" value="<?= $transaction['bukti_pembayaran'] ?>">
-
-                        <label style="font-weight: 600;">Update Status:</label>
-                        <select name="status_baru" class="status-select">
-                            <option value="Belum Dikirim" <?= $transaction['status'] == 'Belum Dikirim' ? 'selected' : '' ?>>Belum Dikirim</option>
-                            <option value="Dikirim" <?= $transaction['status'] == 'Dikirim' ? 'selected' : '' ?>>Dikirim</option>
-                        </select>
-
-                        <button type="submit" name="update_status_group" class="update-btn">💾 Update Status</button>
-                        <button type="submit" formaction="cancel_trnsk.php" name="cancel" class="cancel-btn" style="background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px;" onclick="return confirm('Yakin ingin membatalkan transaksi ini?')">❌ Batalkan</button>
-                    </form>
-
-                </div>
-
-                <div class="transaction-summary">
-                    <div class="summary-row">
-                        <span>Subtotal Produk:</span>
-                        <span>Rp <?php echo number_format($transaction['total_keseluruhan'], 0, ',', '.'); ?></span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Ongkos Kirim:</span>
-                        <span>Rp <?php echo number_format($transaction['ongkir'], 0, ',', '.'); ?></span>
-                    </div>
-                    <div class="summary-row total">
-                        <span>Total Keseluruhan:</span>
-                        <span>Rp <?php echo number_format($transaction['total_keseluruhan'] + $transaction['ongkir'], 0, ',', '.'); ?></span>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
-</div>
+        </div>
     </main>
 
     <footer>
@@ -326,13 +372,13 @@ $stats = mysqli_fetch_assoc($stats_result);
             location.reload();
         }, 30000);
 
-        // Confirm before updating status
+        // Confirm before updating status or canceling
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', function(e) {
-                const submitter = e.submitter; // deteksi tombol mana yang dipakai
+                const submitter = e.submitter;
 
-                if (submitter && submitter.name === 'cancel') {
-                    const confirmCancel = confirm("Apakah Anda yakin ingin membatalkan transaksi ini? Semua data akan dihapus!");
+                if (submitter && submitter.name === 'cancel_group') {
+                    const confirmCancel = confirm("⚠️ PERINGATAN!\n\nApakah Anda yakin ingin membatalkan pesanan ini?\n\n• Status akan diubah menjadi 'Dibatalkan'\n• Bukti pembayaran akan dihapus\n• Aksi ini tidak dapat dibatalkan!\n\nLanjutkan?");
                     if (!confirmCancel) {
                         e.preventDefault();
                         return false;

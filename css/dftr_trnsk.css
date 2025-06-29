@@ -86,9 +86,12 @@ nav a {
 }
 
 .stat-card.total { border-left-color: #667eea; }
-.stat-card.pending { border-left-color: #ffc107; }
-.stat-card.shipped { border-left-color: #28a745; }
+.stat-card.pending { border-left-color: #ff8b07; }
+.stat-card.paided { border-left-color: #218838;}
+.stat-card.shipped { border-left-color: #1714bd; }
+.stat-card.finish { border-left-color: #764ba2;}
 .stat-card.revenue { border-left-color: #17a2b8; }
+.stat-card.cancel { border-left-color: #ff0606; }
 
 .stat-number {
     font-size: 2rem;
@@ -223,14 +226,29 @@ nav a {
     letter-spacing: 0.5px;
 }
 
-.status-badge.belum-dikirim {
+.status-badge.belum-dibayar {
     background: #fff3cd;
-    color: #856404;
+    color: #cc1e1e;
+}
+
+.status-badge.dibayar {
+    background: #d4edda;
+    color: #1c7531;
 }
 
 .status-badge.dikirim {
     background: #d4edda;
-    color: #155724;
+    color: #176897;
+}
+
+.status-badge.selesai {
+    background: #d4edda;
+    color: #8d1773;
+}
+
+.status-badge.dibatalkan {
+    background: #d4edda;
+    color: #cc1e1e;
 }
 
 .status-select {
@@ -253,6 +271,21 @@ nav a {
 
 .update-btn:hover {
     background: #218838;
+}
+
+.cancel-btn {
+    padding: 0.5rem 1rem;
+    background: #eb0f0f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+}
+
+.cancel-btn:hover {
+    background: rgb(148, 13, 13);
 }
 
 .transaction-products {
