@@ -35,10 +35,9 @@ $result = mysqli_stmt_get_result($sql);
 // Kelompokkan transaksi berdasarkan waktu pemesanan yang sama (dalam menit yang sama)
 $transactions = [];
 while ($row = mysqli_fetch_assoc($result)) {
-    // Group by exact timestamp (rounded to nearest minute for same-checkout transactions)
-    $transaction_time = date('Y-m-d H:i', strtotime($row['tanggal_pemesanan']));
-    $group_key = $transaction_time; // Just use the time, not user_id
-    
+    // Gunakan waktu dengan detik untuk memastikan akurat per transaksi
+    $group_key = date('Y-m-d H:i:s', strtotime($row['tanggal_pemesanan']));
+
     if (!isset($transactions[$group_key])) {
         $transactions[$group_key] = [
             'tanggal' => $row['tanggal_pemesanan'],
@@ -50,12 +49,11 @@ while ($row = mysqli_fetch_assoc($result)) {
             'transaction_ids' => []
         ];
     }
-    
+
     $transactions[$group_key]['produk'][] = $row;
     $transactions[$group_key]['total_keseluruhan'] += $row['total_harga'];
     $transactions[$group_key]['transaction_ids'][] = $row['id_transaksi'];
-    
-    // Use the latest status if there are multiple transactions
+
     if ($row['status'] !== 'Belum Dibayar') {
         $transactions[$group_key]['status'] = $row['status'];
     }
@@ -63,7 +61,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 // Sort transactions by date (newest first)
 uasort($transactions, function($a, $b) {
-    return strtotime($b['tanggal']) - strtotime($a['tanggal']);
+    return strtotime($a['tanggal']) - strtotime($b['tanggal']);
 });
 ?>
 
@@ -127,7 +125,9 @@ uasort($transactions, function($a, $b) {
                                         // Mapping status ke kelas warna (untuk badge style)
                                         $status_class = [
                                             'Belum Dibayar' => 'belum-dibayar',
+                                            'Menunggu Konfirmasi' => 'menunggu-konfirmasi',
                                             'Dibayar' => 'dibayar',
+                                            'Diproses' => 'diproses',
                                             'Dikirim' => 'dikirim',
                                             'Selesai' => 'selesai',
                                             'Dibatalkan' => 'dibatalkan'

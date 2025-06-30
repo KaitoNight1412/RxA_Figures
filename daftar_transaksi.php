@@ -154,6 +154,7 @@ $stats = mysqli_fetch_assoc($stats_result);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Transaksi</title>
     <link rel="stylesheet" href="css/dftr_trnsk.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -308,7 +309,6 @@ $stats = mysqli_fetch_assoc($stats_result);
                                             <option value="Dibayar" <?= $transaction['status'] === 'Dibayar' ? 'selected' : '' ?>>Dibayar</option>
                                             <option value="Dikirim" <?= $transaction['status'] === 'Dikirim' ? 'selected' : '' ?>>Dikirim</option>
                                             <option value="Selesai" <?= $transaction['status'] === 'Selesai' ? 'selected' : '' ?>>Selesai</option>
-                                            <option value="Dibatalkan" <?= $transaction['status'] === 'Dibatalkan' ? 'selected' : '' ?>>Dibatalkan</option>
                                         </select>
 
                                         <button type="submit" name="update_status_group" class="update-btn">💾 Update Status</button>
@@ -359,43 +359,86 @@ $stats = mysqli_fetch_assoc($stats_result);
 
     <script>
         // Search functionality
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const searchValue = this.value;
-                const currentStatus = new URLSearchParams(window.location.search).get('status') || 'all';
-                window.location.href = `?status=${currentStatus}&search=${encodeURIComponent(searchValue)}`;
-            }
-        });
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        const searchValue = this.value;
+        const currentStatus = new URLSearchParams(window.location.search).get('status') || 'all';
+        window.location.href = `?status=${currentStatus}&search=${encodeURIComponent(searchValue)}`;
+    }
+});
 
-        // Auto-refresh every 30 seconds for real-time updates
-        setTimeout(function() {
-            location.reload();
-        }, 30000);
+// Auto-refresh every 30 seconds for real-time updates
+setTimeout(function() {
+    location.reload();
+}, 30000);
 
-        // Confirm before updating status or canceling
-        document.querySelectorAll('form').forEach(form => {
+// Confirm before updating status or canceling
+document.addEventListener('DOMContentLoaded', function() {
+    // Flag to track if confirmation was already shown
+    let confirmationShown = false;
+    
+    document.querySelectorAll('form').forEach(form => {
+        const updateBtn = form.querySelector('[name="update_status_group"]');
+        const cancelBtn = form.querySelector('[name="cancel_group"]');
+
+        if (updateBtn) {
             form.addEventListener('submit', function(e) {
-                const submitter = e.submitter;
-
-                if (submitter && submitter.name === 'cancel_group') {
-                    const confirmCancel = confirm("⚠️ PERINGATAN!\n\nApakah Anda yakin ingin membatalkan pesanan ini?\n\n• Status akan diubah menjadi 'Dibatalkan'\n• Bukti pembayaran akan dihapus\n• Aksi ini tidak dapat dibatalkan!\n\nLanjutkan?");
-                    if (!confirmCancel) {
-                        e.preventDefault();
-                        return false;
-                    }
-                }
-
-                if (submitter && submitter.name === 'update_status_group') {
-                    const statusSelect = this.querySelector('select[name="status_baru"]');
+                // Only prevent if it's the update button and confirmation hasn't been shown
+                if (e.submitter === updateBtn && !confirmationShown) {
+                    e.preventDefault();
+                    const statusSelect = form.querySelector('select[name="status_baru"]');
                     const newStatus = statusSelect.value;
-                    const confirmUpdate = confirm(`Yakin ingin mengubah status menjadi "${newStatus}"?`);
-                    if (!confirmUpdate) {
-                        e.preventDefault();
-                        return false;
-                    }
+
+                    Swal.fire({
+                        title: 'Konfirmasi Perubahan Status',
+                        text: `Yakin ingin mengubah status transaksi menjadi "${newStatus}"?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, ubah!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            confirmationShown = true;
+                            updateBtn.click(); // Trigger the form submission again
+                        }
+                    });
                 }
             });
-        });
+        }
+
+        if (cancelBtn) {
+            form.addEventListener('submit', function(e) {
+                // Only prevent if it's the cancel button and confirmation hasn't been shown
+                if (e.submitter === cancelBtn && !confirmationShown) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Batalkan Pesanan?',
+                        html: `
+                            <b>⚠️ PERINGATAN!</b><br>
+                            Transaksi akan <span style="color: red;">dibatalkan permanen</span>.<br>
+                            Bukti pembayaran akan <b>dihapus</b>.<br><br>
+                            <i>Anda yakin ingin melanjutkan?</i>
+                        `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Batalkan',
+                        cancelButtonText: 'Tidak',
+                        reverseButtons: true,
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            confirmationShown = true;
+                            cancelBtn.click(); // Trigger the form submission again
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
     </script>
 </body>
 </html>

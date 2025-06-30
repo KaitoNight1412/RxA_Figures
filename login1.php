@@ -19,7 +19,7 @@ include "koneksi.php";
         <nav>
             <div class="profile-icon">
                 <a href="DaftarProduk.php">Products</a>
-                <a href="about.php">About us</a>
+                <a href="about.php">About</a>
                 <a href="cek_profil.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>
@@ -70,20 +70,20 @@ include "koneksi.php";
         <script>
             <?php if ($_GET['status'] === 'admin'): ?>
                 Swal.fire({
-                title: 'Login Admin Berhasil!',
+                title: 'Login Berhasil!',
                 text: 'Selamat datang, Admin!',
                 icon: 'success',
-                timer: 2000,
+                timer: 1500,
                 showConfirmButton: false
                 }).then(() => {
                 window.location.href = 'admin.php';
                 });
             <?php elseif ($_GET['status'] === 'user'): ?>
                 Swal.fire({
-                title: 'Login User Berhasil!',
+                title: 'Login Berhasil!',
                 text: 'Selamat datang kembali!',
                 icon: 'success',
-                timer: 2000,
+                timer: 1500,
                 showConfirmButton: false
                 }).then(() => {
                 window.location.href = 'user.php';

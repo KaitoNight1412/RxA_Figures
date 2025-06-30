@@ -38,6 +38,7 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
     <meta name="viewport" content="wid_produkth=device-wid_produkth, initial-scale=1.0">
     <title>Dashboard Admin</title>
     <link rel="stylesheet" href="css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -55,7 +56,7 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
 
     <main>
         <div class="form-container">
-            <h1>Table Produk</h1>
+            <h1>Tambah Produk</h1>
             <form action="tambahProduk.php" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="">Nama Produk</label>
@@ -161,7 +162,7 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
             <td><?=$produk['nama']?></td>
             <td><img src="gambar_produk/<?=$produk['gambar']?>" alt="contoh" width="100"></td>
             <td>
-                <a href="hapusProduk.php?id_produk=<?=$produk['id_produk']?>"onclick="return confirm('Apakah Anda yakin ingin menghapus produk ini?')"><button class="delete">Hapus</button></a>
+                <button class="delete swal-delete-btn" data-id="<?= $produk['id_produk'] ?>">Hapus</button>
                 <a href="editProduk.php?id_produk=<?=$produk['id_produk']?>"><button class="edit">Edit</button></a>
             </td>
         </tr>
@@ -205,6 +206,31 @@ function previewGambar() {
     }
 }
 </script>
+
+<script>
+document.querySelectorAll('.swal-delete-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const id = this.dataset.id;
+
+        Swal.fire({
+            title: 'Hapus Produk?',
+            text: "Produk akan dihapus secara permanen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect ke halaman penghapusan
+                window.location.href = `hapusProduk.php?id_produk=${id}`;
+            }
+        });
+    });
+});
+</script>
+
 
 </body>
 </html>

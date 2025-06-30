@@ -21,6 +21,7 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin</title>
     <link rel="stylesheet" href="css/tmbh_kategori.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -39,7 +40,7 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
     <main>
         <div class="form-flex-container">
             <div class="form-box">
-                <h1>Table kategori</h1>
+                <h1>Tambah kategori</h1>
                 <form action="tambahkategori.php" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="">Nama Kategori</label>
@@ -50,7 +51,7 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
             </div>
 
             <div class="form-box">
-                <h1>Table Manufacturer</h1>
+                <h1>Tambah Manufacturer</h1>
                 <form action="tambahmanufacturer.php" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="">Nama Manufacturer</label>
@@ -79,7 +80,7 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
                             <td><?=$kategori['id_kategori']?></td>
                             <td><?=$kategori['nama_kategori']?></td>
                             <td>
-                                <a href="hapuskategori.php?id_kategori=<?=$kategori['id_kategori']?>" onclick="return confirm('Apakah Anda yakin ingin menghapus kategori ini?')"><button class="delete">Hapus</button></a>
+                                <button class="delete swal-delete-kategori" data-id="<?=$kategori['id_kategori']?>">Hapus</button>
                                 <button class="edit" onclick="openEditModal('kategori', '<?=$kategori['id_kategori']?>', '<?=$kategori['nama_kategori']?>')">Edit</button>
                             </td>
                         </tr>
@@ -105,7 +106,7 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
                             <td><?=$manufacturer['id_manufacturer']?></td>
                             <td><?=$manufacturer['nama_manufacturer']?></td>
                             <td>
-                                <a href="hapusmanufacturer.php?id_manufacturer=<?=$manufacturer['id_manufacturer']?>" onclick="return confirm('Apakah Anda yakin ingin menghapus manufacturer ini?')"><button class="delete">Hapus</button></a>
+                                <button class="delete swal-delete-manufacturer" data-id="<?=$manufacturer['id_manufacturer']?>">Hapus</button>
                                 <button class="edit" onclick="openEditModal('manufacturer', '<?=$manufacturer['id_manufacturer']?>', '<?=$manufacturer['nama_manufacturer']?>')">Edit</button>
                             </td>
                         </tr>
@@ -197,6 +198,53 @@ $query_manufacturer = mysqli_query($koneksi,$sql_manufacturer);
         }
 
     </script>
+
+    <script>
+        // SweetAlert untuk kategori
+        document.querySelectorAll('.swal-delete-kategori').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.id;
+
+                Swal.fire({
+                    title: 'Hapus Kategori?',
+                    text: 'Kategori akan dihapus secara permanen!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = `hapuskategori.php?id_kategori=${id}`;
+                    }
+                });
+            });
+        });
+
+        // SweetAlert untuk manufacturer
+        document.querySelectorAll('.swal-delete-manufacturer').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.id;
+
+                Swal.fire({
+                    title: 'Hapus Manufacturer?',
+                    text: 'Manufacturer akan dihapus secara permanen!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = `hapusmanufacturer.php?id_manufacturer=${id}`;
+                    }
+                });
+            });
+        });
+    </script>
+
 
 </body>
 </html>

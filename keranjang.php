@@ -32,6 +32,7 @@ $jumlah_keranjang = mysqli_num_rows($query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <link rel="stylesheet" href="css/keranjang.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -93,7 +94,7 @@ $jumlah_keranjang = mysqli_num_rows($query);
             <p>Kamu belum belanja apapun</p>
         <?php } ?>
         </form>
-            <a href="DaftarProduk.php">nambah yuk</a>
+            <!-- <a href="DaftarProduk.php">nambah yuk</a> -->
     </main>
 
     <footer>
@@ -109,6 +110,77 @@ $jumlah_keranjang = mysqli_num_rows($query);
             </div>
         </div>
     </footer>
+
     <script src="script/keranjang.js?<?=time() ?>"></script>
+    <script>
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault(); // cegah aksi default tombol
+                const idKeranjang = this.dataset.id;
+                const cartItem = this.closest('.cart-item');
+
+                Swal.fire({
+                    title: 'Yakin mau hapus?',
+                    text: 'Produk akan dihapus dari keranjang kamu.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Kirim AJAX ke hapus_keranjang.php
+                        fetch('hapus_keranjang.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: `id_keranjang=${encodeURIComponent(idKeranjang)}`
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                // Hapus elemen dari DOM
+                                cartItem.remove();
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Dihapus!',
+                                    text: 'Produk berhasil dihapus dari keranjang.',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+
+                                // Optional: refresh total bayar
+                                updateTotal();
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: 'Terjadi kesalahan saat menghapus item.'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        // Fungsi untuk update total (opsional)
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll('.cart-item').forEach(item => {
+                const checkbox = item.querySelector('.select-item');
+                const subtotalText = item.querySelector('.subtotal strong').textContent.replace(/[^\d]/g, '');
+                const subtotal = parseInt(subtotalText) || 0;
+                if (checkbox && checkbox.checked) {
+                    total += subtotal;
+                }
+            });
+            document.getElementById('total-text').textContent = 'Rp' + total.toLocaleString('id-ID');
+        }
+    </script>
+
 </body>
 </html>

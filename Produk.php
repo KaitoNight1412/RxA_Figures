@@ -2,10 +2,10 @@
 include "koneksi.php";
 session_start();
 
-if (!isset($_SESSION['id_admin']) && !isset($_SESSION['id_user'])) {
-    header("location:login1.php?Logindulu");
-    exit;
-}
+// if (!isset($_SESSION['id_admin']) && !isset($_SESSION['id_user'])) {
+//     header("location:login1.php?Logindulu");
+//     exit;
+// }
 
 $id_produk = $_GET['id_produk'];
 
@@ -58,7 +58,9 @@ while ($produk = mysqli_fetch_assoc($query)) {
                     <a href="about.php">About</a>
                     <a href="user.php"><img src="img/user/user.png" alt="User Icon" class="profile"></a>
                 <?php else: ?>
+                    <a href="DaftarProduk.php">Products</a>
                     <a href="login1.php">Login</a>
+                    <a href="about.php">About</a>
                 <?php endif; ?>
             </div>
         </nav>
@@ -67,7 +69,7 @@ while ($produk = mysqli_fetch_assoc($query)) {
     <main>
         <div class="produk-container">
             <div class="produk-img">
-                <img id="gambar-kecil" src="gambar_produk/<?= $produk['gambar'] ?>" alt="<?= $produk['nama_produk'] ?>">
+                <img id="gambar-kecil" class="imgProduct" src="gambar_produk/<?= $produk['gambar'] ?>" alt="<?= $produk['nama_produk'] ?>">
 
                 <!-- Modal Gambar -->
                 <div id="modalGambar" class="modal-gambar">
@@ -87,13 +89,22 @@ while ($produk = mysqli_fetch_assoc($query)) {
                 <?php endif; ?>
 
                 <div class="buttons">
-                    <form action="proses_keranjang.php" method="post">
-                        <label for="">Qty</label>
-                        <input type="number" name="jumlah_item" min="1" max="<?=$produk['stok']?>" id="qty-input" >
-                        <input type="hidden" name="id_produk" value="<?=$produk['id_produk']?>">
-                        <input type="hidden" name="id_user" value="<?= isset($_SESSION['id_user']) ? $_SESSION['id_user'] : $_SESSION['id_admin'] ?>">
-                        <button type="submit"class="btn-orange">Add to Cart</button>
-                    </form>
+                    <?php if (isset($_SESSION['id_user'])) : ?>
+                        <form action="proses_keranjang.php" method="post">
+                            <label for="">Qty</label>
+                            <input type="number" name="jumlah_item" min="1" max="<?=$produk['stok']?>" id="qty-input" >
+                            <input type="hidden" name="id_produk" value="<?=$produk['id_produk']?>">
+                            <input type="hidden" name="id_user" value="<?= isset($_SESSION['id_user']) ? $_SESSION['id_user'] : $_SESSION['id_admin'] ?>">
+                            <button type="submit"class="btn-orange">Add to Cart</button>
+                        </form>
+                    <?php else : ?>
+                        <div class="loginPlz">
+                            <h3><i class="fa-solid fa-triangle-exclamation"></i> Anda harus login untuk membeli produk ini.</h3>
+                            <a href="login1.php" class="btn-login">
+                                <i class="fa-solid fa-lock"></i><strong> Login Sekarang</strong>
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

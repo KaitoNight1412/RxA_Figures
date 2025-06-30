@@ -2,8 +2,6 @@
 session_start();
 include "koneksi.php";
 
-
-
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +22,6 @@ include "koneksi.php";
                     <a href="dashboard.php">Add Product</a>
                     <a href="daftar_transaksi.php">Orders</a>
                     <a href="DaftarProduk.php">Products</a>
-                    <a href="about.php">About</a>
                     <a href="admin.php"><img src="img/user/user.png" alt="Admin Icon" class="profile"></a>
                 <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'user'): ?>
                     <a href="keranjang.php">Cart</a>

@@ -2,10 +2,10 @@
 session_start();
 include "koneksi.php";
 
-if (!isset($_SESSION['id_admin']) && !isset($_SESSION['id_user'])) {
-    header("Location:login1.php?Logindulu");
-    exit;
-}
+// if (!isset($_SESSION['id_admin']) && !isset($_SESSION['id_user'])) {
+//     header("Location:login1.php?Logindulu");
+//     exit;
+// }
 
 $keywords = isset($_GET['keywords']) ? $_GET['keywords'] : "";
 $selected_categories = isset($_GET['categories']) ? $_GET['categories'] : [];
@@ -118,6 +118,7 @@ while ($row = mysqli_fetch_assoc($manufacturer_query)) {
                     <a href="user.php"><img src="img/user/user.png" alt="User Icon" class="profile"></a>
                 <?php else: ?>
                     <a href="login1.php">Login</a>
+                    <a href="about.php">About</a>
                 <?php endif; ?>
             </div>
         </nav>

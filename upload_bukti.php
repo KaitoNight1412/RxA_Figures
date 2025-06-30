@@ -51,6 +51,7 @@ if (!empty($checkout_items)) {
             <div class="profile-icon">    
                 <a href="DaftarProduk.php">Products</a>
                 <a href="keranjang.php">Cart</a>
+                <a href="about.php">About</a>
                 <a href="cek_profil.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>

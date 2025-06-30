@@ -19,7 +19,7 @@ include "koneksi.php";
         <nav>
             <div class="profile-icon">
                 <a href="DaftarProduk.php">Products</a>
-                <a href="about.php">About us</a>
+                <a href="about.php">About</a>
                 <a href="login1.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
             </div>
         </nav>

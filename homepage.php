@@ -36,10 +36,23 @@ $query_produk = mysqli_query($koneksi,$sql);
     <header>
         <a href="homepage.php"><img src="img/logo/logo.png" alt="R&A Logo" srcset="" class="logo" ></a>
         <nav>
-            <div class="profile-icon">    
-                <a href="DaftarProduk.php">Products</a>
-                <a href="about.php">About</a>
-                <a href="cek_profil.php"><img src="img/user/user.png" alt="Profile Icon" class="profile"></a>
+            <div class="profile-icon">
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <a href="dashboard.php">Add Product</a>
+                    <a href="daftar_transaksi.php">Orders</a>
+                    <a href="about.php">About</a>
+                    <a href="admin.php"><img src="img/user/user.png" alt="Admin Icon" class="profile"></a>
+                <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'user'): ?>
+                    <a href="DaftarProduk.php">Products</a>
+                    <a href="keranjang.php">Cart</a>
+                    <a href="log_transaksi.php">History</a>
+                    <a href="about.php">About</a>
+                    <a href="user.php"><img src="img/user/user.png" alt="User Icon" class="profile"></a>
+                <?php else: ?>
+                    <a href="DaftarProduk.php">Products</a>
+                    <a href="about.php">About</a>
+                    <a href="cek_profil.php"><img src="img/user/user.png" alt="User Icon" class="profile"></a>
+                <?php endif; ?>
             </div>
         </nav>
     </header>
@@ -114,14 +127,14 @@ $query_produk = mysqli_query($koneksi,$sql);
                     <?php while ($produk = mysqli_fetch_assoc($query_produk)): ?>
                         <div class="product-card">
                             <a href="produk.php?id_produk=<?= $produk['id_produk'] ?>" >
-                            <?php if (!empty($produk['gambar'])): ?>
-                                <img src="gambar_produk/<?php echo $produk['gambar']; ?>" alt="<?php echo $produk['nama_produk']; ?>">
-                            <?php else: ?>
-                                <img src="img/no-image.jpg" alt="No Image">
-                            <?php endif; ?>
-                            <h3><?php echo $produk['nama_produk']; ?></h3>
-                            <div class="price">Rp <?php echo number_format($produk['harga'], 0, ',', '.'); ?></div>
-                            <div class="category"><?php echo $produk['kategori']; ?></div>
+                                <?php if (!empty($produk['gambar'])): ?>
+                                    <img src="gambar_produk/<?php echo $produk['gambar']; ?>" alt="<?php echo $produk['nama_produk']; ?>">
+                                <?php else: ?>
+                                    <img src="img/no-image.jpg" alt="No Image">
+                                <?php endif; ?>
+                                <h3><?php echo $produk['nama_produk']; ?></h3>
+                                <div class="price">Rp <?php echo number_format($produk['harga'], 0, ',', '.'); ?></div>
+                                <div class="category"><?php echo $produk['kategori']; ?></div>
                             </a>
                         </div>
                     <?php endwhile; ?>
