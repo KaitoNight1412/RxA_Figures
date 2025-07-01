@@ -237,13 +237,13 @@ nav a {
 }
 
 .status-badge.dikirim {
-    background: #d4edda;
-    color: #176897;
+    background: #d4d5ed;
+    color: #1d1acc;
 }
 
 .status-badge.selesai {
-    background: #d4edda;
-    color: #8d1773;
+    background: #e7d4ed;
+    color: #ab1cba;
 }
 
 .status-badge.dibatalkan {

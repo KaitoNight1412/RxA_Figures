@@ -64,6 +64,11 @@ nav a {
     margin-left: 20px;
 }
 
+.product-details a {
+    text-decoration: none;
+    color: black;
+}
+
 .product-actions {
     text-align: right;
 }
